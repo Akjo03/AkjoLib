@@ -1,0 +1,7 @@
+<servers>
+    <server>
+        <id>github</id>
+        <username>Akjo03</username>
+        <password>${env.AKJO_GITHUB_PASS}</password>
+    </server>
+</servers>
