@@ -156,7 +156,7 @@ public final class Result<S> implements Supplier<S> {
 	 * <br />
 	 * If the Result is erroneous, this method returns the original
 	 * Result without calling the mapping function. The returned
-	 * value is casted, but this cast is safe because the value
+	 * value is cast, but this cast is safe because the value
 	 * being cast is guaranteed to be {@code null}.
 	 */
 	@SuppressWarnings("unchecked")

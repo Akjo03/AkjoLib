@@ -3,7 +3,6 @@ package io.github.akjo03.lib.logging;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.lang.model.element.TypeElement;
 import java.io.PrintStream;
 import java.time.Instant;
 import java.time.ZoneId;

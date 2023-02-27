@@ -2,7 +2,6 @@ package io.github.akjo03.lib.logging;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused")
