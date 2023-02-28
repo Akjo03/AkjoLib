@@ -144,6 +144,15 @@ public final class Result<S> implements Supplier<S> {
 
 	/**
 	 * Returns the result value unless the Result is erroneous,
+	 * in which case null is returned.
+	 */
+	public S getOrNull() {
+		if (isError()) return null;
+		return s;
+	}
+
+	/**
+	 * Returns the result value unless the Result is erroneous,
 	 * in which case the error value is thrown.
 	 */
 	public S getOrThrow() throws Exception {
