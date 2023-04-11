@@ -2,6 +2,7 @@ package io.github.akjo03.lib.logging;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 
 @Component

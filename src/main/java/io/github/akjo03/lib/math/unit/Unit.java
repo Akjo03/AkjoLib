@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @SuppressWarnings("unused")
 public interface Unit<T extends Unit<T>> {
-	@NotNull String getID();
+	@NotNull String getId();
 
 	@NotNull BigDecimal getConversionFactor(@NotNull T unit);
 

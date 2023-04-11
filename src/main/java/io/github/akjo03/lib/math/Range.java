@@ -4,8 +4,6 @@ import io.github.akjo03.lib.result.Result;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Getter
