@@ -45,14 +45,6 @@
         <lombok.version>1.18.26</lombok.version>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>akjo-lib</id>
-            <name>GitHub Akjo03 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/akjo03/akjolib</url>
-        </repository>
-    </distributionManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
