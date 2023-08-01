@@ -2,17 +2,16 @@ package io.github.akjo03.lib.result;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BinaryOperator;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 public class ResultAggregator {
 	private final List<Result<?>> results;
 
 	public ResultAggregator() {
-		this.results = new ArrayList<>();
+		this.results = new CopyOnWriteArrayList<>();
 	}
 
 	public ResultAggregator add(Result<?> result) {
@@ -20,7 +19,7 @@ public class ResultAggregator {
 		return this;
 	}
 
-	private Result<?> aggregate(Supplier<?> onEmpty, Supplier<?> onSuccess) {
+	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
 		if (results.isEmpty()) {
 			return Result.success(onEmpty.get());
 		}
@@ -66,12 +65,7 @@ public class ResultAggregator {
 		);
 	}
 
-	public Result<?> aggregateAll(BinaryOperator<Object> binaryOperator) {
-		return aggregate(() -> null, () -> {
-			Stream<Object> stream = results.stream()
-					.filter(Result::isSuccess)
-					.map(Result::get);
-			return stream.reduce(binaryOperator).orElse(null);
-		});
+	public <T> Result<T> aggregateBut(T t) {
+		return aggregate(() -> t, () -> t);
 	}
 }
