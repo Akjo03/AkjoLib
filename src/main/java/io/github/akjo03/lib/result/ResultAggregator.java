@@ -1,32 +1,32 @@
 package io.github.akjo03.lib.result;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
-public class ResultAggregator<T> {
-	private final List<Result<T>> results;
+public class ResultAggregator {
+	private final List<Result<?>> results;
 
 	public ResultAggregator() {
 		this.results = new ArrayList<>();
 	}
 
-	public ResultAggregator<T> add(Result<T> result) {
+	public ResultAggregator add(Result<?> result) {
 		results.add(result);
 		return this;
 	}
 
-	private Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
+	private Result<?> aggregate(Supplier<?> onEmpty, Supplier<?> onSuccess) {
 		if (results.isEmpty()) {
 			return Result.success(onEmpty.get());
 		}
 
 		List<Exception> exceptions = new ArrayList<>();
-		for (Result<T> result : results) {
+		for (Result<?> result : results) {
 			if (result.isError()) {
 				exceptions.add(result.getError());
 			}
@@ -39,17 +39,17 @@ public class ResultAggregator<T> {
 		}
 	}
 
-	public Result<T> aggregateFirst() {
+	public Result<?> aggregateFirst() {
 		return aggregate(() -> null, () -> results.get(0).get());
 	}
 
-	public Result<T> aggregateLast() {
+	public Result<?> aggregateLast() {
 		return aggregate(() -> null, () -> results.get(results.size() - 1).get());
 	}
 
-	public Result<T> aggregateFor(Predicate<Result<T>> predicate) {
+	public Result<?> aggregateFor(Predicate<Result<?>> predicate) {
 		return aggregate(() -> null, () -> {
-			for (Result<T> result : results) {
+			for (Result<?> result : results) {
 				if (predicate.test(result)) {
 					return result.get();
 				}
@@ -58,71 +58,20 @@ public class ResultAggregator<T> {
 		});
 	}
 
-	public Result<List<T>> aggregateAll() {
-		if (results.isEmpty()) {
-			return Result.success(Collections.emptyList());
-		}
-
-		List<T> values = new ArrayList<>();
-		List<Exception> exceptions = new ArrayList<>();
-
-		for (Result<T> result : results) {
-			if (result.isError()) {
-				exceptions.add(result.getError());
-			} else {
-				values.add(result.get());
-			}
-		}
-
-		if (exceptions.isEmpty()) {
-			return Result.success(values);
-		} else {
-			return Result.fail(new AggregatedException(exceptions));
-		}
+	public Result<?> aggregateAll() {
+		return aggregate(() -> null, () -> results.stream()
+				.filter(Result::isSuccess)
+				.map(Result::get)
+				.toArray()
+		);
 	}
 
-	public Result<List<T>> aggregateAllFor(Predicate<Result<T>> predicate) {
-		if (results.isEmpty()) {
-			return Result.success(Collections.emptyList());
-		}
-
-		List<T> values = new ArrayList<>();
-		List<Exception> exceptions = new ArrayList<>();
-
-		for (Result<T> result : results) {
-			if (result.isError()) {
-				exceptions.add(result.getError());
-			} else if (predicate.test(result)) {
-				values.add(result.get());
-			}
-		}
-
-		if (exceptions.isEmpty()) {
-			return Result.success(values);
-		} else {
-			return Result.fail(new AggregatedException(exceptions));
-		}
-	}
-
-	public Result<T> aggregateUsing(BinaryOperator<T> aggregator) {
-		if (results.isEmpty()) {
-			return Result.success(null);
-		}
-
-		List<Exception> exceptions = new ArrayList<>();
-		T value = null;
-		for (Result<T> result : results) {
-			if (result.isError()) {
-				exceptions.add(result.getError());
-			} else {
-				value = (value == null) ? result.get() : aggregator.apply(value, result.get());
-			}
-		}
-
-		if (exceptions.isEmpty()) {
-			return Result.success(value);
-		} else {
-			return Result.fail(new AggregatedException(exceptions));
-		}
+	public Result<?> aggregateAll(BinaryOperator<Object> binaryOperator) {
+		return aggregate(() -> null, () -> {
+			Stream<Object> stream = results.stream()
+					.filter(Result::isSuccess)
+					.map(Result::get);
+			return stream.reduce(binaryOperator).orElse(null);
+		});
 	}
 }
