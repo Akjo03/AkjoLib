@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public final class ValidatorRules {
@@ -164,6 +165,21 @@ public final class ValidatorRules {
 	@Contract(pure = true)
 	public static <T> @NotNull Validator<Collection<T>> collectionContainsAny(Collection<T> c, String message) {
 		return l -> l == null || Collections.disjoint(l, c) ? Result.fail(new ValidationException(message)) : Result.success(l);
+	}
+
+	@Contract(pure = true)
+	public static <T> @NotNull Validator<Collection<T>> collectionAllMatch(Predicate<T> p, String message) {
+		return l -> l == null || !l.stream().allMatch(p) ? Result.fail(new ValidationException(message)) : Result.success(l);
+	}
+
+	@Contract(pure = true)
+	public static <T> @NotNull Validator<Collection<T>> collectionAnyMatch(Predicate<T> p, String message) {
+		return l -> l == null || l.stream().noneMatch(p) ? Result.fail(new ValidationException(message)) : Result.success(l);
+	}
+
+	@Contract(pure = true)
+	public static <T> @NotNull Validator<Collection<T>> collectionNoneMatch(Predicate<T> p, String message) {
+		return l -> l == null || l.stream().anyMatch(p) ? Result.fail(new ValidationException(message)) : Result.success(l);
 	}
 
 	@Contract(pure = true)
