@@ -1,5 +1,6 @@
 package io.github.akjo03.lib.result;
 
+import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,6 +60,13 @@ public final class Result<S> implements Supplier<S> {
 
 	private final Exception e;
 	private final S s;
+	/**
+	 * -- GETTER --
+	 *  Returns
+	 *  if the Result is empty,
+	 *  otherwise.
+	 */
+	@Getter
 	private final boolean empty;
 
 	private Result(Exception e, S s, boolean empty) {
@@ -81,14 +89,6 @@ public final class Result<S> implements Supplier<S> {
 	 */
 	public boolean isSuccess() {
 		return s != null;
-	}
-
-	/**
-	 * Returns {@code true} if the Result is empty, {@code false}
-	 * otherwise.
-	 */
-	public boolean isEmpty() {
-		return empty;
 	}
 
 	/**
@@ -198,6 +198,21 @@ public final class Result<S> implements Supplier<S> {
 	}
 
 	/**
+	 * If the Result is erroneous, calls the given {@code Consumer} on
+	 * the specified exception type.
+	 * <br />
+	 * If the Result is successful, this method returns the original
+	 * Result without doing anything.
+	 *
+	 * @param <T> the type of exception to handle
+	 *           (must be a subtype of {@code Exception})
+	 */
+	public <T extends Exception> Result<S> ifError(Class<T> type, Consumer<T> consumer) {
+		if (isError() && type.isInstance(e)) consumer.accept(type.cast(e));
+		return this;
+	}
+
+	/**
 	 * If the Result is successful, calls the given {@code Consumer} on
 	 * the result.
 	 *
@@ -205,6 +220,19 @@ public final class Result<S> implements Supplier<S> {
 	 */
 	public Result<S> ifSuccess(Consumer<S> consumer) {
 		if (isSuccess()) consumer.accept(s);
+		return this;
+	}
+
+	/**
+	 * If the Result is successful, calls the given {@code Consumer} on
+	 * the result. Otherwise, calls the given {@code Consumer} on the
+	 * error result.
+	 *
+	 * @return this
+	 */
+	public Result<S> ifPresent(Consumer<S> success, Consumer<Exception> error) {
+		if (isSuccess()) success.accept(s);
+		else error.accept(e);
 		return this;
 	}
 
