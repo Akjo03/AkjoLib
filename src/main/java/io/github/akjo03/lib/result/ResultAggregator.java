@@ -1,9 +1,9 @@
 package io.github.akjo03.lib.result;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -51,8 +51,23 @@ public class ResultAggregator {
 		return aggregate(() -> null, () -> results.stream().filter(predicate).map(Result::get).findFirst().orElse(null));
 	}
 
-	public Result<List<Object>> aggregateAll() {
-		return aggregate(() -> null, () -> Collections.singletonList(results.stream().filter(Result::isSuccess).map(Result::get)));
+	public <T> Result<List<T>> aggregateAll(Function<Result<?>, T> resultTransformer) {
+		List<Exception> exceptions = new ArrayList<>();
+		List<T> values = new ArrayList<>();
+
+		for (Result<?> result : results) {
+			if (result.isError()) {
+				exceptions.add(result.getError());
+			} else {
+				values.add(resultTransformer.apply(result));
+			}
+		}
+
+		if (!exceptions.isEmpty()) {
+			return Result.fail(new AggregatedException(exceptions));
+		}
+
+		return Result.success(values);
 	}
 
 	public <T> Result<T> aggregateBut(T t) {
