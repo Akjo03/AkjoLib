@@ -1,6 +1,7 @@
 package io.github.akjo03.lib.result;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
@@ -8,13 +9,13 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class ResultAggregator {
-	private final List<Result<Object>> results;
+	private final List<Result<?>> results;
 
 	public ResultAggregator() {
 		this.results = new CopyOnWriteArrayList<>();
 	}
 
-	public ResultAggregator add(Result<Object> result) {
+	public ResultAggregator add(Result<?> result) {
 		results.add(result);
 		return this;
 	}
@@ -38,31 +39,20 @@ public class ResultAggregator {
 		}
 	}
 
-	public Result<?> aggregateFirst() {
+	public Result<Object> aggregateFirst() {
 		return aggregate(() -> null, () -> results.get(0).get());
 	}
 
-	public Result<?> aggregateLast() {
+	public Result<Object> aggregateLast() {
 		return aggregate(() -> null, () -> results.get(results.size() - 1).get());
 	}
 
 	public Result<Object> aggregateFor(Predicate<Result<?>> predicate) {
-		return aggregate(() -> null, () -> {
-			for (Result<?> result : results) {
-				if (predicate.test(result)) {
-					return result.get();
-				}
-			}
-			return null;
-		});
+		return aggregate(() -> null, () -> results.stream().filter(predicate).map(Result::get).findFirst().orElse(null));
 	}
 
 	public Result<List<Object>> aggregateAll() {
-		return aggregate(() -> null, () -> results.stream()
-				.filter(Result::isSuccess)
-				.map(Result::get)
-				.toList()
-		);
+		return aggregate(() -> null, () -> Collections.singletonList(results.stream().filter(Result::isSuccess).map(Result::get)));
 	}
 
 	public <T> Result<T> aggregateBut(T t) {
