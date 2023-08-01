@@ -25,14 +25,18 @@ public class AggregatedException extends RuntimeException {
 		return newExceptions;
 	}
 
+	@Override
+	public String getMessage() {
+		return getMessage("Aggregated Exception Report");
+	}
+
 	public String getMessage(String reportTitle) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(reportTitle).append(" (").append(exceptions.size()).append(" exception/-s):\n");
+		builder.append(reportTitle).append(" (").append(exceptions.size()).append(" exception(s)):\n");
 		for (int i = 0; i < exceptions.size(); i++) {
 			Exception e = exceptions.get(i);
 			builder.append("\tException ").append(i+1).append(" (").append(e.getClass().getSimpleName()).append("): ").append(e.getMessage()).append("\n");
 		}
-		builder.append("--- End of Report ---");
 		return builder.toString();
 	}
 
