@@ -51,7 +51,7 @@ public class ResultAggregator {
 		return aggregate(() -> null, () -> results.stream().filter(predicate).map(Result::get).findFirst().orElse(null));
 	}
 
-	public <T> Result<List<T>> aggregateAll(Function<Result<?>, T> resultTransformer) {
+	public <T> Result<List<T>> aggregateAll(Function<Result<?>, Result<T>> resultTransformer) {
 		List<Exception> exceptions = new ArrayList<>();
 		List<T> values = new ArrayList<>();
 
@@ -59,7 +59,12 @@ public class ResultAggregator {
 			if (result.isError()) {
 				exceptions.add(result.getError());
 			} else {
-				values.add(resultTransformer.apply(result));
+				Result<T> transformedResult = resultTransformer.apply(result);
+				if (transformedResult.isError()) {
+					exceptions.add(transformedResult.getError());
+				} else {
+					values.add(transformedResult.get());
+				}
 			}
 		}
 
