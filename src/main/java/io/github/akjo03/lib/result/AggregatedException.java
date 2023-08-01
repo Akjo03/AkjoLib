@@ -1,6 +1,7 @@
 package io.github.akjo03.lib.result;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -9,7 +10,19 @@ public class AggregatedException extends RuntimeException {
 	private final List<Exception> exceptions;
 
 	public AggregatedException(List<Exception> exceptions) {
-		this.exceptions = exceptions;
+		this.exceptions = unwrap(exceptions);
+	}
+
+	private @NotNull List<Exception> unwrap(@NotNull List<Exception> oldExceptions) {
+		List<Exception> newExceptions = new java.util.ArrayList<>();
+		for (Exception e : oldExceptions) {
+			if (e instanceof AggregatedException) {
+				newExceptions.addAll(unwrap(((AggregatedException) e).getExceptions()));
+			} else {
+				newExceptions.add(e);
+			}
+		}
+		return newExceptions;
 	}
 
 	@Override
