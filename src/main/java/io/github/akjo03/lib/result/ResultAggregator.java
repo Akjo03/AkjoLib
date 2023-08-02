@@ -2,7 +2,6 @@ package io.github.akjo03.lib.result;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -12,7 +11,7 @@ public class ResultAggregator {
 	private final List<Result<?>> results;
 
 	public ResultAggregator() {
-		this.results = new CopyOnWriteArrayList<>();
+		this.results = new ArrayList<>();
 	}
 
 	public ResultAggregator add(Result<?> result) {
