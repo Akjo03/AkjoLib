@@ -1,93 +1,165 @@
 package io.github.akjo03.lib.math.vector;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@Setter
-@AllArgsConstructor
 @SuppressWarnings("unused")
-public class Vector2 {
-	private double x;
-	private double y;
+public final class Vector2 {
+	private static final double EPSILON = 0.00001;
 
-	public Vector2() {
-		this(0, 0);
+	public static final Vector2 ZERO = new Vector2(0, 0);
+	public static final Vector2 ONE = new Vector2(1, 1);
+	public static final Vector2 UP = new Vector2(0, 1);
+	public static final Vector2 DOWN = new Vector2(0, -1);
+	public static final Vector2 LEFT = new Vector2(-1, 0);
+	public static final Vector2 RIGHT = new Vector2(1, 0);
+	public static final Vector2 POSITIVE_INFINITY = new Vector2(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+	public static final Vector2 NEGATIVE_INFINITY = new Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+
+	private final double x;
+	private final double y;
+
+	public Vector2(double x, double y) {
+		this.x = x;
+		this.y = y;
 	}
 
-	public Vector2(@NotNull Vector2 other) {
-		this(other.getX(), other.getY());
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Vector2 v)) {
+			return false;
+		}
+		return Math.abs(x - v.x) < EPSILON && Math.abs(y - v.y) < EPSILON;
 	}
 
-	public void add(@NotNull Vector2 other) {
-		x += other.getX();
-		y += other.getY();
+	@Override
+	public int hashCode() {
+		return Double.hashCode(x) ^ Double.hashCode(y);
 	}
 
-	public void subtract(@NotNull Vector2 other) {
-		x -= other.getX();
-		y -= other.getY();
+	@Override
+	public @NotNull String toString() {
+		String x = String.format("%,.2f", this.x);
+		String y = String.format("%,.2f", this.y);
+		return "Vector2(" + x + ", " + y + ")";
 	}
 
-	public void multiply(double scalar) {
-		x *= scalar;
-		y *= scalar;
+	@Contract(value = "_ -> new", pure = true)
+	public @NotNull Vector2 add(@NotNull Vector2 v) {
+		return new Vector2(x + v.x, y + v.y);
 	}
 
-	public void divide(double scalar) {
-		if (scalar == 0) throw new IllegalArgumentException("Cannot divide by zero");
-		x /= scalar;
-		y /= scalar;
+	@Contract(value = "_ -> new", pure = true)
+	public @NotNull Vector2 subtract(@NotNull Vector2 v) {
+		return new Vector2(x - v.x, y - v.y);
 	}
 
-	public double magnitude() {
+	@Contract(value = "_ -> new", pure = true)
+	public @NotNull Vector2 multiply(@NotNull Vector2 v) {
+		return new Vector2(x * v.x, y * v.y);
+	}
+
+	@Contract("_ -> new")
+	public @NotNull Vector2 divide(@NotNull Vector2 v) {
+		if (v.x == 0 || v.y == 0) {
+			throw new ArithmeticException("Cannot divide by zero!");
+		}
+		return new Vector2(x / v.x, y / v.y);
+	}
+
+	@Contract(value = "_ -> new", pure = true)
+	public @NotNull Vector2 multiply(double scalar) {
+		return new Vector2(x * scalar, y * scalar);
+	}
+
+	@Contract("_ -> new")
+	public @NotNull Vector2 divide(double scalar) {
+		if (scalar == 0) {
+			throw new ArithmeticException("Cannot divide by zero!");
+		}
+		return new Vector2(x / scalar, y / scalar);
+	}
+
+	public boolean isApproximately(@NotNull Vector2 v, double epsilon) {
+		return Math.abs(x - v.x) < epsilon && Math.abs(y - v.y) < epsilon;
+	}
+
+	public boolean isApproximately(@NotNull Vector2 v) {
+		return isApproximately(v, EPSILON);
+	}
+
+	public double getMagnitude() {
 		return Math.sqrt(x * x + y * y);
 	}
 
-	public void normalize() {
-		double mag = magnitude();
-		if (mag == 0) throw new IllegalStateException("Cannot normalize zero vector");
-		x /= mag;
-		y /= mag;
+	public double getMagnitudeSquared() {
+		return x * x + y * y;
 	}
 
-	public double dot(@NotNull Vector2 other) {
-		return x * other.getX() + y * other.getY();
+	public Vector2 getNormalized() {
+		double magnitude = getMagnitude();
+		if (magnitude == 0) {
+			return ZERO;
+		}
+		return new Vector2(x / magnitude, y / magnitude);
 	}
 
-	public double angle(@NotNull Vector2 other) {
-		double dot = dot(other);
-		double mag = magnitude() * other.magnitude();
-		if (mag == 0) throw new IllegalStateException("Cannot compute angle between zero vectors");
-		return Math.acos(dot / mag);
+	public static double angle(@NotNull Vector2 from, @NotNull Vector2 to) {
+		double dotProduct = dot(from, to);
+		double magnitudes = Math.sqrt(from.getMagnitudeSquared() * to.getMagnitudeSquared());
+		return Math.acos(dotProduct / magnitudes);
 	}
 
-	public void set(@NotNull Vector2 other) {
-		setX(other.getX());
-		setY(other.getY());
+	public static @NotNull Vector2 clampMagnitude(@NotNull Vector2 vector, double maxLength) {
+		double magnitude = vector.getMagnitude();
+		if (magnitude > maxLength) {
+			return vector.getNormalized().multiply(maxLength);
+		}
+		return vector;
 	}
 
-	public void set(double x, double y) {
-		setX(x);
-		setY(y);
+	public static double distance(@NotNull Vector2 a, @NotNull Vector2 b) {
+		return a.subtract(b).getMagnitude();
 	}
 
-	public boolean equals(Object other) {
-		if (other == this) return true;
-		if (!(other instanceof Vector2 v)) return false;
-		return Double.compare(x, v.x) == 0 && Double.compare(y, v.y) == 0;
+	public static double dot(@NotNull Vector2 a, @NotNull Vector2 b) {
+		return a.x * b.x + a.y * b.y;
 	}
 
-	public int hashCode() {
-		int result = 17;
-		result = 31 * result + Double.hashCode(x);
-		result = 31 * result + Double.hashCode(y);
-		return result;
+	public static @NotNull Vector2 lerp(@NotNull Vector2 a, @NotNull Vector2 b, double t) {
+		if (t < 0) t = 0;
+		if (t > 1) t = 1;
+		return lerpUnclamped(a, b, t);
 	}
 
-	public String toString() {
-		return String.format("Vector2(%f, %f)", x, y);
+	@Contract("_, _, _ -> new")
+	public static @NotNull Vector2 lerpUnclamped(@NotNull Vector2 a, @NotNull Vector2 b, double t) {
+		return a.add(b.subtract(a).multiply(t));
+	}
+
+	@Contract("_, _ -> new")
+	public static @NotNull Vector2 max(@NotNull Vector2 a, @NotNull Vector2 b) {
+		return new Vector2(
+				Math.max(a.x, b.x),
+				Math.max(a.y, b.y)
+		);
+	}
+
+	@Contract("_, _ -> new")
+	public static @NotNull Vector2 min(@NotNull Vector2 a, @NotNull Vector2 b) {
+		return new Vector2(
+				Math.min(a.x, b.x),
+				Math.min(a.y, b.y)
+		);
+	}
+
+	@Contract("_, _ -> new")
+	public static @NotNull Vector2 scale(@NotNull Vector2 a, @NotNull Vector2 b) {
+		return new Vector2(
+				a.x * b.x,
+				a.y * b.y
+		);
 	}
 }
