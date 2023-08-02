@@ -70,6 +70,10 @@ public class Logger {
 		log(new LogMessage(message, LoggingLevel.TRACE, throwable));
 	}
 
+	public void trace(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.TRACE));
+	}
+
 	public void debug(Object obj) {
 		log(new LogMessage(obj, LoggingLevel.DEBUG));
 	}
@@ -88,6 +92,10 @@ public class Logger {
 
 	public void debug(String message, Throwable throwable) {
 		log(new LogMessage(message, LoggingLevel.DEBUG, throwable));
+	}
+
+	public void debug(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.DEBUG));
 	}
 
 	public void info(Object obj) {
@@ -110,6 +118,10 @@ public class Logger {
 		log(new LogMessage(message, LoggingLevel.INFO, throwable));
 	}
 
+	public void info(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.INFO));
+	}
+
 	public void success(Object obj) {
 		log(new LogMessage(obj, LoggingLevel.SUCCESS));
 	}
@@ -128,6 +140,10 @@ public class Logger {
 
 	public void success(String message, Throwable throwable) {
 		log(new LogMessage(message, LoggingLevel.SUCCESS, throwable));
+	}
+
+	public void success(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.SUCCESS));
 	}
 
 	public void warn(Object obj) {
@@ -150,6 +166,10 @@ public class Logger {
 		log(new LogMessage(message, LoggingLevel.WARN, throwable));
 	}
 
+	public void warn(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.WARN));
+	}
+
 	public void error(Object obj) {
 		log(new LogMessage(obj, LoggingLevel.ERROR));
 	}
@@ -170,6 +190,10 @@ public class Logger {
 		log(new LogMessage(message, LoggingLevel.ERROR, throwable));
 	}
 
+	public void error(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.ERROR));
+	}
+
 	public void fatal(Object obj) {
 		log(new LogMessage(obj, LoggingLevel.FATAL));
 	}
@@ -188,5 +212,9 @@ public class Logger {
 
 	public void fatal(String message, Throwable throwable) {
 		log(new LogMessage(message, LoggingLevel.FATAL, throwable));
+	}
+
+	public void fatal(String message, Object... args) {
+		log(new LogMessage(String.format(message, args), LoggingLevel.FATAL));
 	}
 }
