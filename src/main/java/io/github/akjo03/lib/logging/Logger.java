@@ -5,6 +5,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+
 @Getter
 @Accessors(chain = true)
 @SuppressWarnings("unused")
@@ -12,17 +15,26 @@ public class Logger {
 	private final Class<?> source;
 	private final String name;
 
+	private final BufferedWriter outWriter;
+	private final BufferedWriter errWriter;
+
 	@Setter private LoggingLevel minimumLoggingLevel = LoggingLevel.INFO;
 	@Setter private String loggingFormat = "[%t] [%c / %l]: %m";
 
 	public Logger(Class<?> source) {
 		this.source = source;
 		this.name = source.getSimpleName();
+
+		this.outWriter = new BufferedWriter(new OutputStreamWriter(System.out));
+		this.errWriter = new BufferedWriter(new OutputStreamWriter(System.err));
 	}
 
 	public Logger(String name) {
 		this.source = null;
 		this.name = name;
+
+		this.outWriter = new BufferedWriter(new OutputStreamWriter(System.out));
+		this.errWriter = new BufferedWriter(new OutputStreamWriter(System.err));
 	}
 
 	private void log(@NotNull LogMessage logMessage) {
@@ -30,7 +42,7 @@ public class Logger {
 			return;
 		}
 
-		LogEntry logEntry = new LogEntry(source, name, logMessage);
+		LogEntry logEntry = new LogEntry(source, name, logMessage, outWriter, errWriter);
 		logEntry.print(loggingFormat);
 	}
 

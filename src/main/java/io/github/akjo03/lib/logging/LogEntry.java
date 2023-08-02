@@ -3,7 +3,7 @@ package io.github.akjo03.lib.logging;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.PrintStream;
+import java.io.BufferedWriter;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -22,22 +22,28 @@ public class LogEntry {
 
 	private final LogMessage message;
 
-	LogEntry(Class<?> source,  String loggerName, LogMessage message) {
+	private final BufferedWriter outWriter;
+	private final BufferedWriter errWriter;
+
+	LogEntry(Class<?> source,  String loggerName, LogMessage message, BufferedWriter outWriter, BufferedWriter errWriter) {
 		this.source = source;
 		this.loggerName = loggerName;
 		this.message = message;
+		this.outWriter = outWriter;
+		this.errWriter = errWriter;
 	}
 
 	public void print(@NotNull String format) {
-		PrintStream printStream = switch (message.getLevel()) {
-			case ERROR, FATAL -> System.err;
-			default -> System.out;
-		};
-		printStream.println(
-				message.getLevel().getColor() != null
-						? message.getLevel().getColor().colorize(generate(format), message.getLevel().isBold())
-						: generate(format)
-		);
+		BufferedWriter writer = message.getLevel() == LoggingLevel.ERROR || message.getLevel() == LoggingLevel.FATAL ? errWriter : outWriter;
+		try {
+			writer.append(
+					message.getLevel().getColor() != null
+							? message.getLevel().getColor().colorize(generate(format), message.getLevel().isBold())
+							: generate(format)
+			);
+		} catch (Exception e) {
+			System.err.println("Failed to print log entry: " + e.getLocalizedMessage());
+		}
 	}
 
 	public String generate(@NotNull String format) {
