@@ -40,7 +40,7 @@ public class LogEntry {
 					message.getLevel().getColor() != null
 							? message.getLevel().getColor().colorize(generate(format), message.getLevel().isBold())
 							: generate(format)
-			).append(System.lineSeparator());
+			).append(System.lineSeparator()).flush();
 		} catch (Exception e) {
 			System.err.println("Failed to print log entry: " + e.getLocalizedMessage());
 		}
