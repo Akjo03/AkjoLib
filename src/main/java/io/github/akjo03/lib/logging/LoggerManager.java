@@ -3,111 +3,65 @@ package io.github.akjo03.lib.logging;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "OptionalGetWithoutIsPresent"})
 public class LoggerManager {
-	private static final ArrayList<Logger> LOGGERS = new ArrayList<>();
+	private static final LoggingLevel DEFAULT_MINIMUM_LOGGING_LEVEL = LoggingLevel.INFO;
+	private static final String DEFAULT_LOGGING_FORMAT = "[%t] [%c / %l]: %m";
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
+	private static final List<Logger> LOGGERS = new ArrayList<>();
+	private static final List<Consumer<LogMessage>> LOGGERS_LISTENERS = new ArrayList<>();
+
+	public static void addLoggerListener(Consumer<LogMessage> listener) {
+		LOGGERS_LISTENERS.add(listener);
+	}
+
 	public static @NotNull Logger getLogger(Class<?> element) {
-		if (LOGGERS.stream().anyMatch(logger -> logger.getSource().equals(element))) {
-			return LOGGERS.stream().filter(logger -> logger.getSource().equals(element)).findFirst().get();
-		}
-
-		Logger logger = new Logger(element);
-		LOGGERS.add(logger);
-		return logger;
+		return getLogger(element, DEFAULT_MINIMUM_LOGGING_LEVEL, DEFAULT_LOGGING_FORMAT, new ArrayList<>());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public static @NotNull Logger getLogger(String name) {
-		if (LOGGERS.stream().anyMatch(logger -> logger.getName().equals(name))) {
-			return LOGGERS.stream().filter(logger -> logger.getName().equals(name)).findFirst().get();
-		}
-
-		Logger logger = new Logger(name);
-		LOGGERS.add(logger);
-		return logger;
+		return getLogger(name, DEFAULT_MINIMUM_LOGGING_LEVEL, DEFAULT_LOGGING_FORMAT, new ArrayList<>());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public static @NotNull Logger getLogger(Class<?> source, LoggingLevel minLevel) {
-		if (LOGGERS.stream().anyMatch(logger -> logger.getSource().equals(source))) {
-			return LOGGERS.stream().filter(loggerP -> loggerP.getSource().equals(source)).findFirst().get()
-					.setMinimumLoggingLevel(minLevel);
-		}
-
-		Logger logger = new Logger(source)
-				.setMinimumLoggingLevel(minLevel);
-		LOGGERS.add(logger);
-		return logger;
+		return getLogger(source, minLevel, DEFAULT_LOGGING_FORMAT, new ArrayList<>());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public static @NotNull Logger getLogger(String name, LoggingLevel minLevel) {
-		if (LOGGERS.stream().anyMatch(logger -> logger.getName().equals(name))) {
-			return LOGGERS.stream().filter(loggerP -> loggerP.getName().equals(name)).findFirst().get()
-					.setMinimumLoggingLevel(minLevel);
-		}
-
-		Logger logger = new Logger(name)
-				.setMinimumLoggingLevel(minLevel);
-		LOGGERS.add(logger);
-		return logger;
+		return getLogger(name, minLevel, DEFAULT_LOGGING_FORMAT, new ArrayList<>());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public static @NotNull Logger getLogger(Class<?> source, String loggingFormat) {
-		if (LOGGERS.stream().anyMatch(logger -> logger.getSource().equals(source))) {
-			return LOGGERS.stream().filter(loggerP -> loggerP.getSource().equals(source)).findFirst().get()
-					.setLoggingFormat(loggingFormat);
-		}
-
-		Logger logger = new Logger(source)
-				.setLoggingFormat(loggingFormat);
-		LOGGERS.add(logger);
-		return logger;
+		return getLogger(source, DEFAULT_MINIMUM_LOGGING_LEVEL, loggingFormat, new ArrayList<>());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public static @NotNull Logger getLogger(String name, String loggingFormat) {
-		if (LOGGERS.stream().anyMatch(logger -> logger.getName().equals(name))) {
-			return LOGGERS.stream().filter(loggerP -> loggerP.getName().equals(name)).findFirst().get()
-					.setLoggingFormat(loggingFormat);
-		}
-
-		Logger logger = new Logger(name)
-				.setLoggingFormat(loggingFormat);
-		LOGGERS.add(logger);
-		return logger;
+		return getLogger(name, DEFAULT_MINIMUM_LOGGING_LEVEL, loggingFormat, new ArrayList<>());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public static @NotNull Logger getLogger(Class<?> source, LoggingLevel minLevel, String loggingFormat) {
+		return getLogger(source, minLevel, loggingFormat, new ArrayList<>());
+	}
+
+	public static @NotNull Logger getLogger(Class<?> source, LoggingLevel minLevel, String loggingFormat, List<Consumer<LogMessage>> listeners) {
 		if (LOGGERS.stream().anyMatch(logger -> logger.getSource().equals(source))) {
-			return LOGGERS.stream().filter(loggerP -> loggerP.getSource().equals(source)).findFirst().get()
-					.setMinimumLoggingLevel(minLevel)
-					.setLoggingFormat(loggingFormat);
+			return LOGGERS.stream().filter(loggerP -> loggerP.getSource().equals(source)).findFirst().get();
 		}
 
-		Logger logger = new Logger(source)
-				.setMinimumLoggingLevel(minLevel)
-				.setLoggingFormat(loggingFormat);
+		Logger logger = new Logger(source, LOGGERS_LISTENERS, minLevel, loggingFormat, listeners);
 		LOGGERS.add(logger);
 		return logger;
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	public static @NotNull Logger getLogger(String name, LoggingLevel minLevel, String loggingFormat) {
+	public static @NotNull Logger getLogger(String name, LoggingLevel minLevel, String loggingFormat, List<Consumer<LogMessage>> listeners) {
 		if (LOGGERS.stream().anyMatch(logger -> logger.getName().equals(name))) {
-			return LOGGERS.stream().filter(loggerP -> loggerP.getName().equals(name)).findFirst().get()
-					.setMinimumLoggingLevel(minLevel)
-					.setLoggingFormat(loggingFormat);
+			return LOGGERS.stream().filter(loggerP -> loggerP.getName().equals(name)).findFirst().get();
 		}
 
-		Logger logger = new Logger(name)
-				.setMinimumLoggingLevel(minLevel)
-				.setLoggingFormat(loggingFormat);
+		Logger logger = new Logger(name, LOGGERS_LISTENERS, minLevel, loggingFormat, listeners);
 		LOGGERS.add(logger);
 		return logger;
 	}

@@ -1,37 +1,50 @@
 package io.github.akjo03.lib.logging;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-@Getter
 @Accessors(chain = true)
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "LombokGetterMayBeUsed"})
 public class Logger {
-	private final Class<?> source;
-	private final String name;
+	@Getter private final Class<?> source;
+	@Getter private final String name;
+
+	private final LoggingLevel minimumLoggingLevel;
+	private final String loggingFormat;
+
+	private final List<Consumer<LogMessage>> listeners;
 
 	private final BufferedWriter outWriter;
 	private final BufferedWriter errWriter;
 
-	@Setter private LoggingLevel minimumLoggingLevel = LoggingLevel.INFO;
-	@Setter private String loggingFormat = "[%t] [%c / %l]: %m";
-
-	public Logger(Class<?> source) {
+	public Logger(Class<?> source, List<Consumer<LogMessage>> listeners, LoggingLevel minimumLoggingLevel, String loggingFormat, List<Consumer<LogMessage>> additionalListeners) {
 		this.source = source;
 		this.name = source.getSimpleName();
+
+		this.minimumLoggingLevel = minimumLoggingLevel;
+		this.loggingFormat = loggingFormat;
+
+		this.listeners = additionalListeners.isEmpty() ? listeners : Stream.concat(listeners.stream(), additionalListeners.stream()).toList();
 
 		this.outWriter = new BufferedWriter(new OutputStreamWriter(System.out));
 		this.errWriter = new BufferedWriter(new OutputStreamWriter(System.err));
 	}
 
-	public Logger(String name) {
+	public Logger(String name, List<Consumer<LogMessage>> listeners, LoggingLevel minimumLoggingLevel, String loggingFormat, List<Consumer<LogMessage>> additionalListeners) {
 		this.source = null;
 		this.name = name;
+
+		this.minimumLoggingLevel = minimumLoggingLevel;
+		this.loggingFormat = loggingFormat;
+
+		this.listeners = listeners;
 
 		this.outWriter = new BufferedWriter(new OutputStreamWriter(System.out));
 		this.errWriter = new BufferedWriter(new OutputStreamWriter(System.err));
@@ -44,6 +57,7 @@ public class Logger {
 
 		LogEntry logEntry = new LogEntry(source, name, logMessage, outWriter, errWriter);
 		logEntry.print(loggingFormat);
+		listeners.forEach(listener -> listener.accept(logMessage));
 	}
 
 	public void empty() {
