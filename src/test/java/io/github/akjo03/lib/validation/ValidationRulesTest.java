@@ -1,5 +1,6 @@
 package io.github.akjo03.lib.validation;
 
+import io.github.akjo03.lib.math.Range;
 import io.github.akjo03.lib.result.Result;
 import org.junit.jupiter.api.Test;
 
@@ -750,5 +751,139 @@ public class ValidationRulesTest {
 		result = validator.validate(false);
 		assertFalse(result.isError());
 		assertEquals(false, result.get());
+	}
+
+	@Test
+	public void testIsGreaterThan() {
+		String message = "Value is not greater than 5!";
+		Validator<Integer> validator = ValidatorRules.isGreaterThan(5, message);
+
+		Result<Integer> result = validator.validate(6);
+		assertFalse(result.isError());
+		assertEquals(6, result.get().intValue());
+
+		result = validator.validate(5);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(4);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+	}
+
+	@Test
+	public void testIsGreaterThanOrEqualTo() {
+		String message = "Value is not greater than or equal to 5!";
+		Validator<Integer> validator = ValidatorRules.isGreaterThanOrEqualTo(5, message);
+
+		Result<Integer> result = validator.validate(6);
+		assertFalse(result.isError());
+		assertEquals(6, result.get().intValue());
+
+		result = validator.validate(5);
+		assertFalse(result.isError());
+		assertEquals(5, result.get().intValue());
+
+		result = validator.validate(4);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+	}
+
+	@Test
+	public void testIsLessThan() {
+		String message = "Value is not less than 5!";
+		Validator<Integer> validator = ValidatorRules.isLessThan(5, message);
+
+		Result<Integer> result = validator.validate(4);
+		assertFalse(result.isError());
+		assertEquals(4, result.get().intValue());
+
+		result = validator.validate(5);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(6);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+	}
+
+	@Test
+	public void testIsLessThanOrEqualTo() {
+		String message = "Value is not less than or equal to 5!";
+		Validator<Integer> validator = ValidatorRules.isLessThanOrEqualTo(5, message);
+
+		Result<Integer> result = validator.validate(4);
+		assertFalse(result.isError());
+		assertEquals(4, result.get().intValue());
+
+		result = validator.validate(5);
+		assertFalse(result.isError());
+		assertEquals(5, result.get().intValue());
+
+		result = validator.validate(6);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+	}
+
+	@Test
+	public void testIsInRange() {
+		String message = "Value is not in range!";
+		Range<Integer> range = new Range<>(5, 10);
+		Validator<Integer> validator = ValidatorRules.isInRange(range, message);
+
+		Result<Integer> result = validator.validate(4);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(5);
+		assertFalse(result.isError());
+		assertEquals(5, result.get().intValue());
+
+		result = validator.validate(6);
+		assertFalse(result.isError());
+		assertEquals(6, result.get().intValue());
+
+		result = validator.validate(8);
+		assertFalse(result.isError());
+		assertEquals(8, result.get().intValue());
+
+		result = validator.validate(10);
+		assertFalse(result.isError());
+		assertEquals(10, result.get().intValue());
+
+		result = validator.validate(11);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+	}
+
+	@Test
+	public void testIsNotInRange() {
+		String message = "Value is in range!";
+		Range<Integer> range = new Range<>(5, 10);
+		Validator<Integer> validator = ValidatorRules.isNotInRange(range, message);
+
+		Result<Integer> result = validator.validate(4);
+		assertFalse(result.isError());
+		assertEquals(4, result.get().intValue());
+
+		result = validator.validate(5);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(6);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(8);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(10);
+		assertTrue(result.isError());
+		assertEquals(message, result.getError().getMessage());
+
+		result = validator.validate(11);
+		assertFalse(result.isError());
+		assertEquals(11, result.get().intValue());
 	}
 }

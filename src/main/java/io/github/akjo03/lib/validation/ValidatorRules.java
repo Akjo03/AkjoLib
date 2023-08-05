@@ -1,5 +1,6 @@
 package io.github.akjo03.lib.validation;
 
+import io.github.akjo03.lib.math.Range;
 import io.github.akjo03.lib.result.Result;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -190,5 +191,35 @@ public final class ValidatorRules {
 	@Contract(pure = true)
 	public static <T> @NotNull Validator<T> isFalse(boolean b, String message) {
 		return t -> b ? Result.fail(new ValidationException(message)) : Result.success(t);
+	}
+
+	@Contract(pure = true)
+	public static <T extends Number & Comparable<T>> @NotNull Validator<T> isGreaterThan(T t, String message) {
+		return n -> n.compareTo(t) <= 0 ? Result.fail(new ValidationException(message)) : Result.success(n);
+	}
+
+	@Contract(pure = true)
+	public static <T extends Number & Comparable<T>> @NotNull Validator<T> isGreaterThanOrEqualTo(T t, String message) {
+		return n -> n.compareTo(t) < 0 ? Result.fail(new ValidationException(message)) : Result.success(n);
+	}
+
+	@Contract(pure = true)
+	public static <T extends Number & Comparable<T>> @NotNull Validator<T> isLessThan(T t, String message) {
+		return n -> n.compareTo(t) >= 0 ? Result.fail(new ValidationException(message)) : Result.success(n);
+	}
+
+	@Contract(pure = true)
+	public static <T extends Number & Comparable<T>> @NotNull Validator<T> isLessThanOrEqualTo(T t, String message) {
+		return n -> n.compareTo(t) > 0 ? Result.fail(new ValidationException(message)) : Result.success(n);
+	}
+
+	@Contract(pure = true)
+	public static <T extends Number & Comparable<T>> @NotNull Validator<T> isInRange(Range<T> range, String message) {
+		return n -> !range.contains(n) ? Result.fail(new ValidationException(message)) : Result.success(n);
+	}
+
+	@Contract(pure = true)
+	public static <T extends Number & Comparable<T>> @NotNull Validator<T> isNotInRange(Range<T> range, String message) {
+		return n -> range.contains(n) ? Result.fail(new ValidationException(message)) : Result.success(n);
 	}
 }

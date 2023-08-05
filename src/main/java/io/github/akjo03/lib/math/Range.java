@@ -24,6 +24,13 @@ public class Range<T extends Number & Comparable<T>> {
 		return !lowerCheck && !higherCheck;
 	}
 
+	public boolean contains(@NotNull Range<T> range) {
+		boolean lowerCheck = range.getMin().compareTo(min) <= -1;
+		boolean higherCheck = range.getMax().compareTo(max) >= 1;
+
+		return !lowerCheck && !higherCheck;
+	}
+
 	private @NotNull T calculateMin(@NotNull T min, @NotNull T max) {
 		return min.compareTo(max) <= -1 ? min : max;
 	}
