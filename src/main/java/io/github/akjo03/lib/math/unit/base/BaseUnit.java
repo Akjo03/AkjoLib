@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+@SuppressWarnings("unused")
 public interface BaseUnit<T extends BaseUnit<T>> extends Unit<T> {
 	@Override
 	default @NotNull BigDecimal getConversionFactor(@NotNull T unit) {

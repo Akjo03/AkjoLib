@@ -2,6 +2,7 @@ package io.github.akjo03.lib.math.unit.derived.dimension;
 
 import lombok.Getter;
 
+@Getter
 @SuppressWarnings("unused")
 public enum UnitDimensionOperator {
 	ADD("+"),
@@ -10,7 +11,6 @@ public enum UnitDimensionOperator {
 	DIVIDE("/"),
 	POWER("^");
 
-	@Getter
 	private final String symbol;
 
 	UnitDimensionOperator(String symbol) {

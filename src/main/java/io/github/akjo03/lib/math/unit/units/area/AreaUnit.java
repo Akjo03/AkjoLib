@@ -11,9 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 
+@Getter
 @SuppressWarnings("unused")
 public enum AreaUnit implements DerivedUnit<AreaUnit> {
 	SQUARE_METRE(new UnitDimension(LengthUnit.METRE).power(2), Map.ofEntries(
@@ -117,29 +119,17 @@ public enum AreaUnit implements DerivedUnit<AreaUnit> {
 			), "ac", UnitSystem.IMPERIAL
 	);
 
-	@Getter
-	@NotNull
-	private final Map<Locale, StringArr2> localizedNames;
+	@NotNull private final Map<Locale, StringArr2> localizedNames;
 
-	@Getter
-	@NotNull
-	private final StringArr2 defaultName;
+	@NotNull private final StringArr2 defaultName;
 
-	@Getter
-	@NotNull
-	private final java.util.Map<Locale, String> localizedAbbreviations;
+	@NotNull private final java.util.Map<Locale, String> localizedAbbreviations;
 
-	@Getter
-	@NotNull
-	private final String defaultAbbreviation;
+	@NotNull private final String defaultAbbreviation;
 
-	@Getter
-	@NotNull
-	private final UnitSystem unitSystem;
+	@NotNull private final UnitSystem unitSystem;
 
-	@Getter
-	@NotNull
-	private final UnitDimension dimension;
+	@NotNull private final UnitDimension dimension;
 
 	AreaUnit(@NotNull UnitDimension dimension, @NotNull Map<Locale, StringArr2> localizedNames, @NotNull StringArr2 defaultName, @NotNull String defaultAbbreviation, @NotNull UnitSystem unitSystem) {
 		this.dimension = dimension;
@@ -160,17 +150,13 @@ public enum AreaUnit implements DerivedUnit<AreaUnit> {
 	}
 
 	@Override
-	public @NotNull String getId() {
-		return this.name();
-	}
+	public @NotNull String getId() { return this.name(); }
 
 	public static @Nullable AreaUnit getUnit(@NotNull String unitStr) {
-		for (AreaUnit unit : values()) {
-			if (unit.toString().equals(unitStr)) {
-				return unit;
-			}
-		}
-		return null;
+		return Arrays.stream(values())
+				.filter(unit -> unit.toString().equals(unitStr))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

@@ -4,14 +4,18 @@ import io.github.akjo03.lib.array.StringArr2;
 import io.github.akjo03.lib.math.unit.UnitSystem;
 import io.github.akjo03.lib.math.unit.base.BaseUnit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.LocaleUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 
+@Getter
+@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public enum TimeUnit implements BaseUnit<TimeUnit> {
 	SECOND(new BigDecimal("1"), Map.ofEntries(
@@ -78,56 +82,29 @@ public enum TimeUnit implements BaseUnit<TimeUnit> {
 			Map.entry(LocaleUtils.toLocale(Locale.UK), "yr")
 	), "yr", UnitSystem.METRIC);
 
-	@Getter
-	@NotNull
-	private final BigDecimal divisor;
+	@NotNull private final BigDecimal divisor;
 
-	@Getter
-	@NotNull
-	private final Map<Locale, StringArr2> localizedNames;
+	@NotNull private final Map<Locale, StringArr2> localizedNames;
 
-	@Getter
-	@NotNull
-	private final StringArr2 defaultName;
+	@NotNull private final StringArr2 defaultName;
 
-	@Getter
-	@NotNull
-	private final Map<Locale, String> localizedAbbreviations;
+	@NotNull private final Map<Locale, String> localizedAbbreviations;
 
-	@Getter
-	@NotNull
-	private final String defaultAbbreviation;
+	@NotNull private final String defaultAbbreviation;
 
-	@Getter
-	@NotNull
-	private final UnitSystem unitSystem;
-
-	TimeUnit(@NotNull BigDecimal divisor, @NotNull Map<Locale, StringArr2> localizedNames, @NotNull StringArr2 defaultName, @NotNull Map<Locale, String> localizedAbbreviations, @NotNull String defaultAbbreviation, @NotNull UnitSystem unitSystem) {
-		this.divisor = divisor;
-		this.localizedNames = localizedNames;
-		this.defaultName = defaultName;
-		this.localizedAbbreviations = localizedAbbreviations;
-		this.defaultAbbreviation = defaultAbbreviation;
-		this.unitSystem = unitSystem;
-	}
+	@NotNull private final UnitSystem unitSystem;
 
 	@Override
-	public TimeUnit getBaseUnit() {
-		return SECOND;
-	}
+	public TimeUnit getBaseUnit() { return SECOND; }
 
 	@Override
-	public @NotNull String getId() {
-		return this.name();
-	}
+	public @NotNull String getId() { return this.name(); }
 
 	public static @Nullable TimeUnit getUnit(@NotNull String unitStr) {
-		for (TimeUnit unit : values()) {
-			if (unit.toString().equals(unitStr)) {
-				return unit;
-			}
-		}
-		return null;
+		return Arrays.stream(values())
+				.filter(unit -> unit.toString().equals(unitStr))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

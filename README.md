@@ -1,3 +1,5 @@
+<h1 align="center">📕 AkjoLib</h1>
+
 ```xml
 <repository>
     <id>jitpack.io</id>
@@ -9,6 +11,6 @@
 <dependency>
     <groupId>com.github.Akjo03</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>1.7.1</version>
+    <version>2.0.0</version>
 </dependency>
 ```

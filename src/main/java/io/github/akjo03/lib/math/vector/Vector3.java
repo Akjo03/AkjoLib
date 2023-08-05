@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 @Getter
 @SuppressWarnings("unused")
 public final class Vector3 {
@@ -16,7 +18,7 @@ public final class Vector3 {
 	public static final Vector3 LEFT = new Vector3(-1, 0, 0);
 	public static final Vector3 RIGHT = new Vector3(1, 0, 0);
 	public static final Vector3 FORWARD = new Vector3(0, 0, 1);
-	public static final Vector3 BACK = new Vector3(0, 0, -1);
+	public static final Vector3 BACKWARD = new Vector3(0, 0, -1);
 	public static final Vector3 POSITIVE_INFINITY = new Vector3(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 	public static final Vector3 NEGATIVE_INFINITY = new Vector3(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
 
@@ -39,12 +41,28 @@ public final class Vector3 {
 		if (!(obj instanceof Vector3 v)) {
 			return false;
 		}
+		if (this.x == Double.POSITIVE_INFINITY &&
+			v.x == Double.POSITIVE_INFINITY &&
+			this.y == Double.POSITIVE_INFINITY &&
+			v.y == Double.POSITIVE_INFINITY &&
+			this.z == Double.POSITIVE_INFINITY &&
+			v.z == Double.POSITIVE_INFINITY) {
+			return true;
+		}
+		if (this.x == Double.NEGATIVE_INFINITY &&
+			v.x == Double.NEGATIVE_INFINITY &&
+			this.y == Double.NEGATIVE_INFINITY &&
+			v.y == Double.NEGATIVE_INFINITY &&
+			this.z == Double.NEGATIVE_INFINITY &&
+			v.z == Double.NEGATIVE_INFINITY) {
+			return true;
+		}
 		return Math.abs(x - v.x) < EPSILON && Math.abs(y - v.y) < EPSILON && Math.abs(z - v.z) < EPSILON;
 	}
 
 	@Override
 	public int hashCode() {
-		return Double.hashCode(x) ^ Double.hashCode(y) ^ Double.hashCode(z);
+		return Objects.hash(x, y, z);
 	}
 
 	@Override
@@ -124,7 +142,7 @@ public final class Vector3 {
 	public static @NotNull Vector3 clampMagnitude(@NotNull Vector3 vector, double maxLength) {
 		double magnitude = vector.getMagnitude();
 		if (magnitude > maxLength) {
-			return vector.getNormalized().multiply(new Vector3(maxLength, maxLength, maxLength));
+			return vector.getNormalized().multiply(maxLength);
 		}
 		return vector;
 	}

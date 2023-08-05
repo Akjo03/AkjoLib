@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "LombokGetterMayBeUsed"})
 public class UnitDimensionContainer {
 	@Getter
 	private final Unit<?> unit;

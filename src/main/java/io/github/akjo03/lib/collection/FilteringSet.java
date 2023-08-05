@@ -102,7 +102,7 @@ public class FilteringSet<K> extends AbstractSet<K> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T[] toArray(T @NotNull [] a) {
+	public <T> T[] toArray(T@NotNull[] a) {
 		if (a.length < size()) {
 			return (T[]) toArray();
 		}

@@ -19,9 +19,11 @@ public class ResultAggregator {
 		return this;
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
 		if (results.isEmpty()) {
-			return Result.success(onEmpty.get());
+			T t = onEmpty.get();
+			return t == null ? (Result<T>) Result.empty() : Result.success(t);
 		}
 
 		List<Exception> exceptions = new ArrayList<>();
@@ -72,6 +74,11 @@ public class ResultAggregator {
 		}
 
 		return Result.success(values);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Result<List<T>> aggregateAll() {
+		return aggregateAll(result -> (Result<T>) result);
 	}
 
 	public <T> Result<T> aggregateBut(T t) {

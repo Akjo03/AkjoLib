@@ -11,9 +11,11 @@ import org.apache.commons.lang3.LocaleUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 
+@Getter
 @SuppressWarnings("unused")
 public enum SpeedUnit implements DerivedUnit<SpeedUnit> {
 	METRES_PER_SECOND(new UnitDimension(LengthUnit.METRE).divide(TimeUnit.SECOND), Map.ofEntries(
@@ -49,29 +51,17 @@ public enum SpeedUnit implements DerivedUnit<SpeedUnit> {
 			), "kn", UnitSystem.IMPERIAL
 	);
 
-	@Getter
-	@NotNull
-	private final Map<Locale, StringArr2> localizedNames;
+	@NotNull private final Map<Locale, StringArr2> localizedNames;
 
-	@Getter
-	@NotNull
-	private final StringArr2 defaultName;
+	@NotNull private final StringArr2 defaultName;
 
-	@Getter
-	@NotNull
-	private final Map<Locale, String> localizedAbbreviations;
+	@NotNull private final Map<Locale, String> localizedAbbreviations;
 
-	@Getter
-	@NotNull
-	private final String defaultAbbreviation;
+	@NotNull private final String defaultAbbreviation;
 
-	@Getter
-	@NotNull
-	private final UnitSystem unitSystem;
+	@NotNull private final UnitSystem unitSystem;
 
-	@Getter
-	@NotNull
-	private final UnitDimension dimension;
+	@NotNull private final UnitDimension dimension;
 
 	SpeedUnit(@NotNull UnitDimension dimension, @NotNull Map<Locale, StringArr2> localizedNames, @NotNull StringArr2 defaultName, @NotNull String defaultAbbreviation, @NotNull UnitSystem unitSystem) {
 		this.dimension = dimension;
@@ -92,17 +82,13 @@ public enum SpeedUnit implements DerivedUnit<SpeedUnit> {
 	}
 
 	@Override
-	public @NotNull String getId() {
-		return this.name();
-	}
+	public @NotNull String getId() { return this.name(); }
 
 	public static @Nullable SpeedUnit getUnit(@NotNull String unitStr) {
-		for (SpeedUnit unit : values()) {
-			if (unit.toString().equals(unitStr)) {
-				return unit;
-			}
-		}
-		return null;
+		return Arrays.stream(values())
+				.filter(unit -> unit.toString().equals(unitStr))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

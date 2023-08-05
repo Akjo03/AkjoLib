@@ -4,8 +4,10 @@ import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 @Getter
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ClassCanBeRecord"})
 public final class Vector2 {
 	private static final double EPSILON = 0.00001;
 
@@ -31,12 +33,24 @@ public final class Vector2 {
 		if (!(obj instanceof Vector2 v)) {
 			return false;
 		}
+		if (this.x == Double.POSITIVE_INFINITY &&
+			v.x == Double.POSITIVE_INFINITY &&
+			this.y == Double.POSITIVE_INFINITY &&
+			v.y == Double.POSITIVE_INFINITY) {
+			return true;
+		}
+		if (this.x == Double.NEGATIVE_INFINITY &&
+			v.x == Double.NEGATIVE_INFINITY &&
+			this.y == Double.NEGATIVE_INFINITY &&
+			v.y == Double.NEGATIVE_INFINITY) {
+			return true;
+		}
 		return Math.abs(x - v.x) < EPSILON && Math.abs(y - v.y) < EPSILON;
 	}
 
 	@Override
 	public int hashCode() {
-		return Double.hashCode(x) ^ Double.hashCode(y);
+		return Objects.hash(x, y);
 	}
 
 	@Override
@@ -104,6 +118,11 @@ public final class Vector2 {
 			return ZERO;
 		}
 		return new Vector2(x / magnitude, y / magnitude);
+	}
+
+	@Contract(value = " -> new", pure = true)
+	public @NotNull Vector3 toVector3() {
+		return new Vector3(x, y, 0);
 	}
 
 	public static double angle(@NotNull Vector2 from, @NotNull Vector2 to) {
