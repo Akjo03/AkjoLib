@@ -40,6 +40,25 @@ public class ResultAggregator {
 		}
 	}
 
+	private <T> Result<T> aggregateResults(Supplier<Result<T>> onEmpty, Supplier<Result<T>> onSuccess) {
+		if (results.isEmpty()) {
+			return onEmpty.get();
+		}
+
+		List<Exception> exceptions = new ArrayList<>();
+		for (Result<?> result : results) {
+			if (result.isError()) {
+				exceptions.add(result.getError());
+			}
+		}
+
+		if (exceptions.isEmpty()) {
+			return onSuccess.get();
+		} else {
+			return Result.fail(new AggregatedException(exceptions));
+		}
+	}
+
 	public Result<Object> aggregateFirst() {
 		return aggregate(() -> null, () -> results.get(0).get());
 	}
@@ -83,5 +102,9 @@ public class ResultAggregator {
 
 	public <T> Result<T> aggregateBut(T t) {
 		return aggregate(() -> t, () -> t);
+	}
+
+	public <T> Result<T> aggregateBut(Result<T> result) {
+		return aggregateResults(() -> result, () -> result);
 	}
 }
