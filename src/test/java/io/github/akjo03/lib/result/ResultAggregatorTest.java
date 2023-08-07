@@ -147,7 +147,7 @@ public class ResultAggregatorTest {
 	public void testAggregateButResult_success() {
 		resultAggregator.add(successResult1);
 		resultAggregator.add(successResult2);
-		Result<String> result = resultAggregator.aggregateBut(Result.success("Test"));
+		Result<String> result = resultAggregator.aggregateButResult(Result.success("Test"));
 		assertTrue(result.isSuccess());
 		assertEquals("Test", result.get());
 	}
@@ -156,13 +156,13 @@ public class ResultAggregatorTest {
 	public void testAggregateButResult_error() {
 		resultAggregator.add(successResult1);
 		resultAggregator.add(errorResult);
-		Result<String> result = resultAggregator.aggregateBut(Result.success("Test"));
+		Result<String> result = resultAggregator.aggregateButResult(Result.success("Test"));
 		assertTrue(result.isError());
 	}
 
 	@Test
 	public void testAggregateButResult_empty() {
-		Result<String> result = resultAggregator.aggregateBut(Result.success("Test"));
+		Result<String> result = resultAggregator.aggregateButResult(Result.success("Test"));
 		assertTrue(result.isSuccess());
 		assertEquals("Test", result.get());
 	}

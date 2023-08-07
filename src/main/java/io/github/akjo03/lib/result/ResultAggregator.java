@@ -104,7 +104,7 @@ public class ResultAggregator {
 		return aggregate(() -> t, () -> t);
 	}
 
-	public <T> Result<T> aggregateBut(Result<T> result) {
+	public <T> Result<T> aggregateButResult(Result<T> result) {
 		return aggregateResults(() -> result, () -> result);
 	}
 }
