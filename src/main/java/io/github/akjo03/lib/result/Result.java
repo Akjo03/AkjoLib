@@ -29,7 +29,7 @@ public final class Result<S> implements Supplier<S> {
 	}
 
 	@Contract(value = " -> new", pure = true)
-	public static @NotNull Result<?> empty() {
+	public static @NotNull Result<Void> empty() {
 		return new Result<>(null, null, true);
 	}
 
