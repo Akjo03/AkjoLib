@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 @Getter
+@SuppressWarnings("unused")
 public class AggregatedException extends RuntimeException {
 	private final List<Exception> exceptions;
 
@@ -43,5 +44,13 @@ public class AggregatedException extends RuntimeException {
 	@Override
 	public String toString() {
 		return getMessage("Aggregated Exception Report");
+	}
+
+	public static void print(Exception e, String reportTitle) {
+		if (e instanceof AggregatedException) {
+			System.err.println(((AggregatedException) e).getMessage(reportTitle));
+		} else {
+			System.err.println(reportTitle + " (1 exception):\n\tException 1 (" + e.getClass().getSimpleName() + "): " + e.getMessage());
+		}
 	}
 }
