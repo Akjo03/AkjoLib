@@ -18,10 +18,10 @@ public final class SwingWindow {
 		});
 	}
 
-	public static void onWindowClosed(@NotNull Frame frame, @NotNull Consumer<WindowEvent> callback) {
+	public static void onWindowClosing(@NotNull Frame frame, @NotNull Consumer<WindowEvent> callback) {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosed(WindowEvent e) {
+			public void windowClosing(WindowEvent e) {
 				callback.accept(e);
 			}
 		});
