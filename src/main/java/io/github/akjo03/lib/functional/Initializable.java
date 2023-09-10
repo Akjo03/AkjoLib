@@ -1,7 +1,7 @@
-package io.github.akjo03.lib.init;
+package io.github.akjo03.lib.functional;
 
 @FunctionalInterface
 @SuppressWarnings("unused")
 public interface Initializable {
-	void init();
+	void initialize() throws Exception;
 }
