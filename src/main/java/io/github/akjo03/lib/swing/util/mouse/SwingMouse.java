@@ -1,4 +1,4 @@
-package io.github.akjo03.lib.swing.helper.mouse;
+package io.github.akjo03.lib.swing.util.mouse;
 
 import org.jetbrains.annotations.NotNull;
 

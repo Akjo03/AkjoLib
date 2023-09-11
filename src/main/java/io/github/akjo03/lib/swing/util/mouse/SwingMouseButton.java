@@ -1,4 +1,4 @@
-package io.github.akjo03.lib.swing.helper.mouse;
+package io.github.akjo03.lib.swing.util.mouse;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

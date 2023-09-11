@@ -1,7 +1,7 @@
 package io.github.akjo03.lib.swing.component.menu;
 
 import io.github.akjo03.lib.swing.component.menu.item.SwingMenuItem;
-import io.github.akjo03.lib.swing.helper.mouse.SwingMouse;
+import io.github.akjo03.lib.swing.util.mouse.SwingMouse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

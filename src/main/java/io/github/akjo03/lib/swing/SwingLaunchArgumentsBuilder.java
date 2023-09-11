@@ -2,12 +2,15 @@ package io.github.akjo03.lib.swing;
 
 import io.github.akjo03.lib.builder.Builder;
 import io.github.akjo03.lib.error.ErrorTemplate;
+import io.github.akjo03.lib.lang.Language;
 
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class SwingLaunchArgumentsBuilder implements Builder<SwingLaunchArguments> {
 	private String appName = "Untitled App";
+	private Language language = Language.ENGLISH;
+	private String languageBundle = null;
 	private Runnable onLaunch = () -> {};
 	private Runnable onClosing = () -> {};
 	private Consumer<Integer> onStartupError = (e) -> {};
@@ -24,6 +27,16 @@ public class SwingLaunchArgumentsBuilder implements Builder<SwingLaunchArguments
 
 	public SwingLaunchArgumentsBuilder setAppName(String appName) {
 		this.appName = appName;
+		return this;
+	}
+
+	public SwingLaunchArgumentsBuilder setLanguage(Language language) {
+		this.language = language;
+		return this;
+	}
+
+	public SwingLaunchArgumentsBuilder setLanguageBundle(String languageBundle) {
+		this.languageBundle = languageBundle;
 		return this;
 	}
 
@@ -64,6 +77,17 @@ public class SwingLaunchArgumentsBuilder implements Builder<SwingLaunchArguments
 
 	@Override
 	public SwingLaunchArguments build() {
-		return new SwingLaunchArguments(appName, onLaunch, onClosing, onStartupError, onGenericError, startupErrorTemplate, genericErrorTemplate, startupErrorArgs);
+		return new SwingLaunchArguments(
+				appName,
+				language,
+				languageBundle,
+				onLaunch,
+				onClosing,
+				onStartupError,
+				onGenericError,
+				startupErrorTemplate,
+				genericErrorTemplate,
+				startupErrorArgs
+		);
 	}
 }

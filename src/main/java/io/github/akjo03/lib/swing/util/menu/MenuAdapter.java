@@ -1,4 +1,4 @@
-package io.github.akjo03.lib.swing.helper.menu;
+package io.github.akjo03.lib.swing.util.menu;
 
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;

@@ -1,4 +1,4 @@
-package io.github.akjo03.lib.swing.helper.window;
+package io.github.akjo03.lib.swing.util.window;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;

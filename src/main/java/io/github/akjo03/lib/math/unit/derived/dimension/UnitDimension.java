@@ -1,5 +1,6 @@
 package io.github.akjo03.lib.math.unit.derived.dimension;
 
+import io.github.akjo03.lib.lang.Language;
 import io.github.akjo03.lib.math.unit.Unit;
 import io.github.akjo03.lib.math.unit.base.BaseUnit;
 import io.github.akjo03.lib.math.unit.derived.DerivedUnit;
@@ -10,7 +11,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Locale;
 
 @SuppressWarnings({"unused", "LombokGetterMayBeUsed"})
 public class UnitDimension implements Iterable<UnitDimensionContainer> {
@@ -154,13 +154,13 @@ public class UnitDimension implements Iterable<UnitDimensionContainer> {
 
 	@Override
 	public String toString() {
-		return this.toStringLocalized(Locale.getDefault());
+		return this.toStringLocalized(Language.ENGLISH);
 	}
 
-	public String toStringLocalized(Locale locale) {
+	public String toStringLocalized(Language language) {
 		StringBuilder sb = new StringBuilder();
 		for (UnitDimensionContainer container : containers) {
-			sb.append(container.toStringLocalized(locale));
+			sb.append(container.toStringLocalized(language));
 		}
 		return sb.toString();
 	}

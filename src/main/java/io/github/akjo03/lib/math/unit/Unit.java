@@ -1,10 +1,10 @@
 package io.github.akjo03.lib.math.unit;
 
 import io.github.akjo03.lib.array.StringArr2;
+import io.github.akjo03.lib.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -14,43 +14,43 @@ public interface Unit<T extends Unit<T>> {
 
 	@NotNull BigDecimal getConversionFactor(@NotNull T unit);
 
-	@NotNull Map<Locale, StringArr2> getLocalizedNames();
+	@NotNull Map<Language, StringArr2> getLocalizedNames();
 
 	@NotNull StringArr2 getDefaultName();
 
-	@NotNull Map<Locale, String> getLocalizedAbbreviations();
+	@NotNull Map<Language, String> getLocalizedAbbreviations();
 
 	@NotNull String getDefaultAbbreviation();
 
-	default @NotNull StringArr2 getLocalizedName(Locale locale) {
-		StringArr2 name = getLocalizedNames().get(locale);
+	default @NotNull StringArr2 getLocalizedName(Language language) {
+		StringArr2 name = getLocalizedNames().get(language);
 		if (name == null) {
 			name = Objects.requireNonNull(
 					getLocalizedNames()
 							.entrySet()
 							.stream()
-							.filter(nameP -> nameP.getKey().getLanguage().startsWith(locale.getLanguage()))
+							.filter(nameP -> nameP.getKey().getName().startsWith(language.getLocale().getLanguage()))
 							.findFirst()
-							.orElseThrow(() -> new IllegalArgumentException("No name for locale " + locale))
+							.orElseThrow(() -> new IllegalArgumentException("No name for language \"" + language.getName() + "\""))
 							.getValue(),
-					"Name for locale " + locale + " is null"
+					"Name for language \"" + language.getName() + "\" is null"
 			);
 		}
 		return name;
 	}
 
-	default @NotNull String getLocalizedAbbreviation(Locale locale) {
-		String abbreviation = getLocalizedAbbreviations().get(locale);
+	default @NotNull String getLocalizedAbbreviation(Language language) {
+		String abbreviation = getLocalizedAbbreviations().get(language);
 		if (abbreviation == null) {
 			abbreviation = Objects.requireNonNull(
 					getLocalizedAbbreviations()
 							.entrySet()
 							.stream()
-							.filter(abbreviationP -> abbreviationP.getKey().getLanguage().startsWith(locale.getLanguage()))
+							.filter(abbreviationP -> abbreviationP.getKey().getName().startsWith(language.getLocale().getLanguage()))
 							.findFirst()
-							.orElseThrow(() -> new IllegalArgumentException("No abbreviation for locale " + locale))
+							.orElseThrow(() -> new IllegalArgumentException("No abbreviation for language \"" + language.getName() + "\""))
 							.getValue(),
-					"Abbreviation for locale " + locale + " is null"
+					"Abbreviation for language \"" + language + "\" is null"
 			);
 		}
 		return abbreviation;

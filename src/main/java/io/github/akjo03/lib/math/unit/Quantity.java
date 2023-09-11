@@ -1,6 +1,7 @@
 package io.github.akjo03.lib.math.unit;
 
 import io.github.akjo03.lib.array.StringArr2;
+import io.github.akjo03.lib.lang.Language;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +10,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 @Getter
 @SuppressWarnings("unused")
@@ -147,15 +147,15 @@ public abstract class Quantity<T extends Unit<T>> extends Number implements Comp
 
 	@Override
 	public String toString() {
-		return toStringLocalized(Locale.getDefault());
+		return toStringLocalized(Language.ENGLISH);
 	}
 
 	public abstract String toObjectString();
 
-	public String toStringLocalized(Locale locale) {
-		StringArr2 name = this.unit.getLocalizedName(locale);
+	public String toStringLocalized(Language language) {
+		StringArr2 name = this.unit.getLocalizedName(language);
 
-		DecimalFormat df = getDecimalFormat(locale);
+		DecimalFormat df = getDecimalFormat(language);
 		if (this.value.compareTo(BigDecimal.ONE) > 0) {
 			return df.format(this.value) + " " + name.getSecond();
 		} else {
@@ -163,17 +163,17 @@ public abstract class Quantity<T extends Unit<T>> extends Number implements Comp
 		}
 	}
 
-	public String toStringLocalizedWithAbbreviation(Locale locale) {
-		String abbreviation = this.unit.getLocalizedAbbreviation(locale);
+	public String toStringLocalizedWithAbbreviation(Language language) {
+		String abbreviation = this.unit.getLocalizedAbbreviation(language);
 
-		DecimalFormat df = getDecimalFormat(locale);
+		DecimalFormat df = getDecimalFormat(language);
 		return df.format(this.value) + " " + abbreviation;
 	}
 
-	private @NotNull DecimalFormat getDecimalFormat(Locale locale) {
+	private @NotNull DecimalFormat getDecimalFormat(Language language) {
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(20);
-		DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols(language.getLocale());
 		if (this.value.compareTo(BigDecimal.ONE) > 0 || this.value.compareTo(BigDecimal.ONE.negate()) < 0) {
 			dfs.setExponentSeparator("e+");
 		} else {

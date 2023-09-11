@@ -1,13 +1,13 @@
 package io.github.akjo03.lib.math.unit.derived.dimension;
 
+import io.github.akjo03.lib.lang.Language;
 import io.github.akjo03.lib.math.unit.Unit;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
-import java.util.Locale;
 
-@SuppressWarnings({"unused", "LombokGetterMayBeUsed"})
+@SuppressWarnings("unused")
 public class UnitDimensionContainer {
 	@Getter
 	private final Unit<?> unit;
@@ -35,13 +35,13 @@ public class UnitDimensionContainer {
 
 	@Override
 	public String toString() {
-		return toStringLocalized(Locale.getDefault());
+		return toStringLocalized(Language.ENGLISH);
 	}
 
-	public @NotNull String toStringLocalized(Locale locale) {
+	public @NotNull String toStringLocalized(Language language) {
 		String symbol = "";
 		if (unit != null) {
-			symbol = unit.getLocalizedAbbreviation(locale);
+			symbol = unit.getLocalizedAbbreviation(language);
 		} else if (value != null) {
 			symbol = value.toString();
 		}

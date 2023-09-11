@@ -1,5 +1,6 @@
-package io.github.akjo03.lib.swing.helper.window;
+package io.github.akjo03.lib.swing.util.window;
 
+import com.formdev.flatlaf.FlatLaf;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -26,6 +27,18 @@ public final class SwingWindow {
 	public static void initialize(@NotNull JFrame frame, @NotNull String appName) throws Exception {
 		UIManager.put("JRootPane.menuBarEmbedded", true);
 		UIManager.put("JComponent.outline", Color.getColor("#3498db"));
+		UIManager.put("h00.font", "+24");
+		UIManager.put("h0.font", "+18");
+		UIManager.put("h1.font", "+12 $semibold.font");
+		UIManager.put("h2.font", "+10 $semibold.font");
+		UIManager.put("h3.font", "+6 $semibold.font");
+		UIManager.put("h4.font", "+2 $semibold.font");
+		UIManager.put("large.font", "+4");
+		UIManager.put("medium.font", "+2");
+		UIManager.put("defaultFont", new Font("Inter", Font.PLAIN, 12));
+		UIManager.put("small.font", "-2");
+		UIManager.put("mini.font", "-4");
+		FlatLaf.updateUI();
 
 		frame.setTitle(appName);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

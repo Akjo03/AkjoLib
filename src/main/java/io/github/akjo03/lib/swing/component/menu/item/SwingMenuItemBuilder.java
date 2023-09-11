@@ -1,9 +1,9 @@
 package io.github.akjo03.lib.swing.component.menu.item;
 
 import io.github.akjo03.lib.swing.component.menu.SwingMenuComponentBuilder;
-import io.github.akjo03.lib.swing.helper.key.SwingKey;
-import io.github.akjo03.lib.swing.helper.key.SwingKeyModifier;
-import io.github.akjo03.lib.swing.helper.key.SwingKeyboard;
+import io.github.akjo03.lib.swing.util.key.SwingKey;
+import io.github.akjo03.lib.swing.util.key.SwingKeyModifier;
+import io.github.akjo03.lib.swing.util.key.SwingKeyboard;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 

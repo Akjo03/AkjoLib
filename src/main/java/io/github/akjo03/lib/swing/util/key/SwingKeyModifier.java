@@ -1,4 +1,4 @@
-package io.github.akjo03.lib.swing.helper.key;
+package io.github.akjo03.lib.swing.util.key;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
