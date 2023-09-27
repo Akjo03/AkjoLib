@@ -25,7 +25,7 @@ public abstract class SwingApp extends JFrame implements Initializable, SwingRun
 			@NotNull SwingApp app,
 			@NotNull SwingLaunchArguments arguments
 	) {
-		SwingDialogs.onError(() -> {
+		SwingDialogs.onError(null, () -> {
 			SwingLocalization.setLocale(app, arguments.getLanguage());
 			FlatOneDarkIJTheme.setup();
 
@@ -34,9 +34,13 @@ public abstract class SwingApp extends JFrame implements Initializable, SwingRun
 			app.setLanguageBundle(arguments.getLanguageBundle());
 			app.setOnClosing(arguments.getOnClosing());
 			app.initialize();
-		}, (e) -> arguments.getOnStartupError().accept(arguments.getStartupErrorTemplate().getErrorCode()), arguments.getStartupErrorTemplate(), arguments.getStartupErrorArgs());
+		}, (e) -> arguments.getOnStartupError().accept(
+				arguments.getStartupErrorTemplate().getErrorStatus()),
+				arguments.getStartupErrorTemplate(),
+				arguments.getStartupErrorArgs()
+		);
 
-		SwingUtilities.invokeLater(() -> SwingDialogs.onError(() -> {
+		SwingUtilities.invokeLater(() -> SwingDialogs.onError(app, () -> {
 			arguments.getOnLaunch().run();
 			app.run();
 		}, arguments.getOnGenericError(), arguments.getGenericErrorTemplate()));

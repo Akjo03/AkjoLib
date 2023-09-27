@@ -16,11 +16,11 @@ public class SwingLaunchArgumentsBuilder implements Builder<SwingLaunchArguments
 	private Consumer<Integer> onStartupError = (e) -> {};
 	private Consumer<Exception> onGenericError = (e) -> {};
 	private ErrorTemplate startupErrorTemplate = new ErrorTemplate(
-			1, "Startup Error",
+			1, "STARTUP_ERROR", "Startup Error",
 			"An error occurred while launching the application."
 	);
 	private ErrorTemplate genericErrorTemplate = new ErrorTemplate(
-			0, "Generic Error",
+			1, "GENERIC_ERROR", "Generic Error",
 			"An error occurred while running the application."
 	);
 	private Object[] startupErrorArgs;

@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 @SuppressWarnings({"unused"})
 public class ErrorTemplate {
 	@Getter
-	private final int errorCode;
+	private final int errorStatus;
+	@Getter
+	private final String errorCode;
 	@Getter
 	private final String errorTitle;
 

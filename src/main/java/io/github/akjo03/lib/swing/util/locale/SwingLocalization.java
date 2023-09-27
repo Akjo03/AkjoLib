@@ -3,6 +3,7 @@ package io.github.akjo03.lib.swing.util.locale;
 import io.github.akjo03.lib.lang.Language;
 import io.github.akjo03.lib.swing.SwingRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Locale;
@@ -28,10 +29,15 @@ public final class SwingLocalization {
 		UIManager.put("OptionPane.okButtonText", bundle.getString("general.ok"));
 	}
 
-	public static @NotNull String getLabel(@NotNull SwingRunnable app, @NotNull String key) {
-		String appBundleName = app.getLanguageBundle();
-		Locale appLocale = app.getFrame().getLocale();
+	public static @NotNull String getLabel(@Nullable SwingRunnable app, @NotNull String key) {
+		String appBundleName = null;
+		Locale appLocale = Locale.getDefault();
 		ResourceBundle appBundle = null;
+
+		if (app != null) {
+			appBundleName = app.getLanguageBundle();
+			appLocale = app.getFrame().getLocale();
+		}
 
 		if (appBundleName != null) {
 			try {
