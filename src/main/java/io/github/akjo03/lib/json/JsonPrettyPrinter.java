@@ -5,11 +5,9 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.core.util.Separators;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
 public class JsonPrettyPrinter extends DefaultPrettyPrinter {
 	public JsonPrettyPrinter() {
 		_arrayIndenter = DefaultIndenter.SYSTEM_LINEFEED_INSTANCE;
