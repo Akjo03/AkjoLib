@@ -3,27 +3,28 @@ package io.github.akjo03.lib.result;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @SuppressWarnings("unused")
 public class AggregatedException extends RuntimeException {
-	private final List<Exception> exceptions;
+	private final List<Throwable> throwables;
 
-	public AggregatedException(List<Exception> exceptions) {
-		this.exceptions = unwrap(exceptions);
+	public AggregatedException(List<Throwable> throwables) {
+		this.throwables = unwrap(throwables);
 	}
 
-	private @NotNull List<Exception> unwrap(@NotNull List<Exception> oldExceptions) {
-		List<Exception> newExceptions = new java.util.ArrayList<>();
-		for (Exception e : oldExceptions) {
+	private @NotNull List<Throwable> unwrap(@NotNull List<Throwable> oldExceptions) {
+		List<Throwable> newThrowables = new ArrayList<>();
+		for (Throwable e : oldExceptions) {
 			if (e instanceof AggregatedException) {
-				newExceptions.addAll(unwrap(((AggregatedException) e).getExceptions()));
+				newThrowables.addAll(unwrap(((AggregatedException) e).getThrowables()));
 			} else {
-				newExceptions.add(e);
+				newThrowables.add(e);
 			}
 		}
-		return newExceptions;
+		return newThrowables;
 	}
 
 	@Override
@@ -33,10 +34,10 @@ public class AggregatedException extends RuntimeException {
 
 	public String getMessage(String reportTitle) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(reportTitle).append(" (").append(exceptions.size()).append(" exception(s)):\n");
-		for (int i = 0; i < exceptions.size(); i++) {
-			Exception e = exceptions.get(i);
-			builder.append("\tException ").append(i+1).append(" (").append(e.getClass().getSimpleName()).append("): ").append(e.getMessage()).append("\n");
+		builder.append(reportTitle).append(" (").append(throwables.size()).append(" exception(s)):\n");
+		for (int i = 0; i < throwables.size(); i++) {
+			Throwable t = throwables.get(i);
+			builder.append("\tException ").append(i+1).append(" (").append(t.getClass().getSimpleName()).append("): ").append(t.getMessage()).append("\n");
 		}
 		return builder.toString();
 	}
@@ -46,7 +47,7 @@ public class AggregatedException extends RuntimeException {
 		return getMessage("Aggregated Exception Report");
 	}
 
-	public static void print(Exception e, String reportTitle) {
+	public static void print(Throwable e, String reportTitle) {
 		if (e instanceof AggregatedException) {
 			System.err.println(((AggregatedException) e).getMessage(reportTitle));
 		} else {

@@ -1,15 +1,24 @@
 package io.github.akjo03.lib.result;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+/**
+ * Aggregates multiple {@link Result} objects and provides methods to process them collectively.
+ */
 @SuppressWarnings("unused")
 public class ResultAggregator {
 	private final List<Result<?>> results;
 
+	@Contract(pure = true)
 	public ResultAggregator() {
 		this.results = new ArrayList<>();
 	}
@@ -22,41 +31,24 @@ public class ResultAggregator {
 	@SuppressWarnings("unchecked")
 	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
 		if (results.isEmpty()) {
-			T t = onEmpty.get();
-			return t == null ? (Result<T>) Result.empty() : Result.success(t);
+			return Optional.ofNullable(onEmpty.get())
+					.map(Result::success)
+					.orElseGet(() -> (Result<T>) Result.empty());
 		}
 
-		List<Exception> exceptions = new ArrayList<>();
-		for (Result<?> result : results) {
-			if (result.isError()) {
-				exceptions.add(result.getError());
-			}
-		}
+		List<Throwable> throwables = collectErrors();
 
-		if (exceptions.isEmpty()) {
-			return Result.success(onSuccess.get());
-		} else {
-			return Result.fail(new AggregatedException(exceptions));
-		}
+		return throwables.isEmpty() ? Result.success(onSuccess.get()) : Result.fail(new AggregatedException(throwables));
 	}
 
-	private <T> Result<T> aggregateResults(Supplier<Result<T>> onEmpty, Supplier<Result<T>> onSuccess) {
-		if (results.isEmpty()) {
-			return onEmpty.get();
-		}
-
-		List<Exception> exceptions = new ArrayList<>();
+	private @NotNull List<Throwable> collectErrors() {
+		List<Throwable> throwables = new ArrayList<>();
 		for (Result<?> result : results) {
 			if (result.isError()) {
-				exceptions.add(result.getError());
+				throwables.add(result.getError());
 			}
 		}
-
-		if (exceptions.isEmpty()) {
-			return onSuccess.get();
-		} else {
-			return Result.fail(new AggregatedException(exceptions));
-		}
+		return throwables;
 	}
 
 	public Result<Object> aggregateFirst() {
@@ -68,31 +60,33 @@ public class ResultAggregator {
 	}
 
 	public Result<Object> aggregateFor(Predicate<Result<?>> predicate) {
-		return aggregate(() -> null, () -> results.stream().filter(predicate).map(Result::get).findFirst().orElse(null));
+		return aggregate(
+				() -> null,
+				() -> results.stream()
+						.filter(predicate)
+						.findFirst()
+						.map(Result::get)
+						.orElse(null));
 	}
 
 	public <T> Result<List<T>> aggregateAll(Function<Result<?>, Result<T>> resultTransformer) {
-		List<Exception> exceptions = new ArrayList<>();
+		List<Throwable> throwables = new ArrayList<>();
 		List<T> values = new ArrayList<>();
 
 		for (Result<?> result : results) {
 			if (result.isError()) {
-				exceptions.add(result.getError());
+				throwables.add(result.getError());
 			} else {
 				Result<T> transformedResult = resultTransformer.apply(result);
 				if (transformedResult.isError()) {
-					exceptions.add(transformedResult.getError());
+					throwables.add(transformedResult.getError());
 				} else {
 					values.add(transformedResult.get());
 				}
 			}
 		}
 
-		if (!exceptions.isEmpty()) {
-			return Result.fail(new AggregatedException(exceptions));
-		}
-
-		return Result.success(values);
+		return throwables.isEmpty() ? Result.success(values) : Result.fail(new AggregatedException(throwables));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,7 +98,15 @@ public class ResultAggregator {
 		return aggregate(() -> t, () -> t);
 	}
 
-	public <T> Result<T> aggregateButResult(Result<T> result) {
-		return aggregateResults(() -> result, () -> result);
+	public boolean isAllSuccess() {
+		return results.stream().allMatch(Result::isSuccess);
+	}
+
+	public boolean isAnyError() {
+		return results.stream().anyMatch(Result::isError);
+	}
+
+	public Stream<Result<?>> asStream() {
+		return results.stream();
 	}
 }

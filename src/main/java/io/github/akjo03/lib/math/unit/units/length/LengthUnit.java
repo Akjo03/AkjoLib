@@ -6,12 +6,14 @@ import io.github.akjo03.lib.math.unit.UnitSystem;
 import io.github.akjo03.lib.math.unit.base.BaseUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
@@ -100,21 +102,23 @@ public enum LengthUnit implements BaseUnit<LengthUnit> {
 
 	@NotNull private final UnitSystem unitSystem;
 
+	private static final Map<String, LengthUnit> UNIT_MAP = Arrays.stream(values())
+			.collect(Collectors.toUnmodifiableMap(LengthUnit::getId, unit -> unit));
+
 	@Override
+	@Contract(pure = true)
 	public LengthUnit getBaseUnit() { return METRE;  }
 
 	@Override
+	@Contract(pure = true)
 	public @NotNull String getId() { return this.name(); }
-
-	public static @Nullable LengthUnit getUnit(@NotNull String unitStr) {
-		return Arrays.stream(values())
-				.filter(unit -> unit.toString().equals(unitStr))
-				.findFirst()
-				.orElse(null);
-	}
 
 	@Override
 	public @NotNull String toString() {
 		return this.getClass().getSimpleName() + "." + this.name();
+	}
+
+	public static Optional<LengthUnit> getUnit(@NotNull String unitStr) {
+		return Optional.ofNullable(UNIT_MAP.get(unitStr));
 	}
 }

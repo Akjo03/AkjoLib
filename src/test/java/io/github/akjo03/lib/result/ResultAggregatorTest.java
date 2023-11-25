@@ -144,26 +144,51 @@ public class ResultAggregatorTest {
 	}
 
 	@Test
-	public void testAggregateButResult_success() {
+	public void testIsAllSuccess_withAllSuccess() {
 		resultAggregator.add(successResult1);
 		resultAggregator.add(successResult2);
-		Result<String> result = resultAggregator.aggregateButResult(Result.success("Test"));
-		assertTrue(result.isSuccess());
-		assertEquals("Test", result.get());
+		assertTrue(resultAggregator.isAllSuccess());
 	}
 
 	@Test
-	public void testAggregateButResult_error() {
+	public void testIsAllSuccess_withError() {
 		resultAggregator.add(successResult1);
 		resultAggregator.add(errorResult);
-		Result<String> result = resultAggregator.aggregateButResult(Result.success("Test"));
-		assertTrue(result.isError());
+		assertFalse(resultAggregator.isAllSuccess());
 	}
 
 	@Test
-	public void testAggregateButResult_empty() {
-		Result<String> result = resultAggregator.aggregateButResult(Result.success("Test"));
-		assertTrue(result.isSuccess());
-		assertEquals("Test", result.get());
+	public void testIsAllSuccess_empty() {
+		assertTrue(resultAggregator.isAllSuccess());
+	}
+
+	@Test
+	public void testIsAnyError_withError() {
+		resultAggregator.add(successResult1);
+		resultAggregator.add(errorResult);
+		assertTrue(resultAggregator.isAnyError());
+	}
+
+	@Test
+	public void testIsAnyError_withAllSuccess() {
+		resultAggregator.add(successResult1);
+		resultAggregator.add(successResult2);
+		assertFalse(resultAggregator.isAnyError());
+	}
+
+	@Test
+	public void testIsAnyError_empty() {
+		assertFalse(resultAggregator.isAnyError());
+	}
+
+	@Test
+	public void testAsStream() {
+		resultAggregator.add(successResult1);
+		resultAggregator.add(errorResult);
+
+		List<Result<?>> resultList = resultAggregator.asStream().toList();
+		assertEquals(2, resultList.size());
+		assertTrue(resultList.contains(successResult1));
+		assertTrue(resultList.contains(errorResult));
 	}
 }

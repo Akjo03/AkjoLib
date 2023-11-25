@@ -23,14 +23,14 @@ public class ResultTest {
 
 	@Test
 	public void testFail() {
-		Exception exception = new Exception("Test");
-		Result<String> result = Result.fail(exception);
+		Throwable throwable = new Exception("Test");
+		Result<String> result = Result.fail(throwable);
 
 		assertFalse(result.isSuccess());
 		assertTrue(result.isError());
 		assertFalse(result.isEmpty());
 		assertThrows(NoSuchElementException.class, result::get);
-		assertEquals(exception, result.getError());
+		assertEquals(throwable, result.getError());
 	}
 
 	@Test
@@ -58,16 +58,16 @@ public class ResultTest {
 
 	@Test
 	public void testFrom_fail() {
-		Exception exception = new Exception("Test");
+		Throwable throwable = new Exception("Test");
 		Result<String> result = Result.from(() -> {
-			throw exception;
+			throw throwable;
 		});
 
 		assertFalse(result.isSuccess());
 		assertTrue(result.isError());
 		assertFalse(result.isEmpty());
 		assertThrows(NoSuchElementException.class, result::get);
-		assertEquals(exception, result.getError());
+		assertEquals(throwable, result.getError());
 	}
 
 	@Test
@@ -105,15 +105,15 @@ public class ResultTest {
 	}
 
 	@Test
-	public void testGetOrThrow() throws Exception {
+	public void testGetOrThrow() throws Throwable {
 		String data = "Hello, World!";
 
 		Result<String> result = Result.success(data);
 		assertEquals(data, result.getOrThrow());
 
-		Exception exception = new Exception("Test");
-		result = Result.fail(exception);
-		assertEquals(exception, result.getError());
+		Throwable throwable = new Exception("Test");
+		result = Result.fail(throwable);
+		assertEquals(throwable, result.getError());
 		assertThrows(Exception.class, result::getOrThrow);
 	}
 
@@ -137,15 +137,15 @@ public class ResultTest {
 
 	@Test
 	public void testMapError() {
-		Exception exception = new Exception("Test");
-		Result<String> result = Result.fail(exception);
+		Throwable throwable = new Exception("Test");
+		Result<String> result = Result.fail(throwable);
 
-		Function<Exception, Exception> function = RuntimeException::new;
+		Function<Throwable, Throwable> function = RuntimeException::new;
 		Result<String> mappedResult = result.mapError(function);
 
 		assertTrue(mappedResult.isError());
 		assertTrue(mappedResult.getError() instanceof RuntimeException);
-		assertEquals(exception, mappedResult.getError().getCause());
+		assertEquals(throwable, mappedResult.getError().getCause());
 
 		result = Result.success("Hello, World!");
 		mappedResult = result.mapError(function);
@@ -156,38 +156,38 @@ public class ResultTest {
 
 	@Test
 	public void testIfError() {
-		Exception exception = new Exception("Test");
-		Result<String> result = Result.fail(exception);
+		Throwable throwable = new Exception("Test");
+		Result<String> result = Result.fail(throwable);
 
-		final Exception[] capturedException = new Exception[2];
-		result.ifError(e -> capturedException[0] = e);
+		final Throwable[] capturedThrowable = new Exception[2];
+		result.ifError(e -> capturedThrowable[0] = e);
 
-		assertEquals(exception, capturedException[0]);
+		assertEquals(throwable, capturedThrowable[0]);
 
 		result = Result.success("Hello, World!");
-		result.ifError(e -> capturedException[1] = e);
+		result.ifError(e -> capturedThrowable[1] = e);
 
-		assertNull(capturedException[1]);
+		assertNull(capturedThrowable[1]);
 	}
 
 	@Test
 	public void testIfErrorTyped() {
-		Exception exception = new Exception("Test");
-		Result<String> result = Result.fail(exception);
+		Throwable throwable = new Exception("Test");
+		Result<String> result = Result.fail(throwable);
 
-		final Exception[] capturedException = new Exception[3];
-		result.ifError(Exception.class, e -> capturedException[0] = e);
+		final Throwable[] capturedThrowable = new Exception[3];
+		result.ifError(Exception.class, e -> capturedThrowable[0] = e);
 
-		assertEquals(exception, capturedException[0]);
+		assertEquals(throwable, capturedThrowable[0]);
 
 		result = Result.success("Hello, World!");
-		result.ifError(Exception.class, e -> capturedException[1] = e);
+		result.ifError(Exception.class, e -> capturedThrowable[1] = e);
 
-		assertNull(capturedException[1]);
+		assertNull(capturedThrowable[1]);
 
-		result.ifError(NullPointerException.class, e -> capturedException[2] = e);
+		result.ifError(NullPointerException.class, e -> capturedThrowable[2] = e);
 
-		assertNull(capturedException[2]);
+		assertNull(capturedThrowable[2]);
 	}
 
 	@Test
@@ -212,37 +212,37 @@ public class ResultTest {
 		Result<String> result = Result.success(data);
 
 		final String[] capturedData = new String[2];
-		final Exception[] capturedException = new Exception[2];
+		final Throwable[] capturedThrowable = new Exception[2];
 
 		result.ifPresent(
 			s -> capturedData[0] = s,
-			e -> capturedException[0] = e
+			e -> capturedThrowable[0] = e
 		);
 
 		assertEquals(data, capturedData[0]);
-		assertNull(capturedException[0]);
+		assertNull(capturedThrowable[0]);
 
 		result = Result.fail(new Exception("Test"));
 		result.ifPresent(
 			s -> capturedData[1] = s,
-			e -> capturedException[1] = e
+			e -> capturedThrowable[1] = e
 		);
 
 		assertNull(capturedData[1]);
-		assertEquals("Test", capturedException[1].getMessage());
+		assertEquals("Test", capturedThrowable[1].getMessage());
 	}
 
 	@Test
 	public void testWrapError() {
-		Exception exception = new Exception("Test");
-		Result<String> result = Result.fail(exception);
+		Throwable throwable = new Exception("Test");
+		Result<String> result = Result.fail(throwable);
 
 		Result<String> wrappedResult = result.wrapError(RuntimeException::new, "Wrapped");
 
 		assertTrue(wrappedResult.isError());
 		assertTrue(wrappedResult.getError() instanceof RuntimeException);
 		assertEquals("Wrapped", wrappedResult.getError().getMessage());
-		assertEquals(exception, wrappedResult.getError().getCause());
+		assertEquals(throwable, wrappedResult.getError().getCause());
 
 		result = Result.success("Hello, World!");
 		wrappedResult = result.wrapError(RuntimeException::new, "Wrapped");
@@ -253,15 +253,15 @@ public class ResultTest {
 
 	@Test
 	public void testWrapErrorJustMap() {
-		Exception exception = new Exception("Test");
-		Result<String> result = Result.fail(exception);
+		Throwable throwable = new Exception("Test");
+		Result<String> result = Result.fail(throwable);
 
-		Function<Exception, Exception> function = RuntimeException::new;
+		Function<Throwable, Throwable> function = RuntimeException::new;
 		Result<String> mappedResult = result.wrapError(function);
 
 		assertTrue(mappedResult.isError());
 		assertTrue(mappedResult.getError() instanceof RuntimeException);
-		assertEquals(exception, mappedResult.getError().getCause());
+		assertEquals(throwable, mappedResult.getError().getCause());
 
 		result = Result.success("Hello, World!");
 		mappedResult = result.wrapError(function);

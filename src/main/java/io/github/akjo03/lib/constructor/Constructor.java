@@ -12,7 +12,7 @@ public interface Constructor<T extends Constructable, C extends Constructor<T, C
         aggregator.add(result);
 
         if (result.isError()) {
-            return aggregator.aggregateButResult(result);
+            return result;
         }
 
         T constructable = result.get();

@@ -6,7 +6,7 @@
 
     <groupId>io.github.akjo03.lib</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.4.0</version>
+    <version>3.5.0</version>
     <packaging>jar</packaging>
 
     <name>AkjoLib</name>
@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.15.2</jackson.version>
         <commons-lang.version>3.13.0</commons-lang.version>
         <guava.version>32.1.2-jre</guava.version>

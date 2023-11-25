@@ -7,14 +7,18 @@ import io.github.akjo03.lib.math.unit.derived.DerivedUnit;
 import io.github.akjo03.lib.math.unit.derived.dimension.UnitDimension;
 import io.github.akjo03.lib.math.unit.units.length.LengthUnit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
+@RequiredArgsConstructor
 @SuppressWarnings("unused")
 public enum AreaUnit implements DerivedUnit<AreaUnit> {
 	SQUARE_METRE(new UnitDimension(LengthUnit.METRE).power(2), Map.ofEntries(
@@ -98,6 +102,8 @@ public enum AreaUnit implements DerivedUnit<AreaUnit> {
 			), "ac", UnitSystem.IMPERIAL
 	);
 
+	@NotNull private final UnitDimension dimension;
+
 	@NotNull private final Map<Language, StringArr2> localizedNames;
 
 	@NotNull private final StringArr2 defaultName;
@@ -108,38 +114,19 @@ public enum AreaUnit implements DerivedUnit<AreaUnit> {
 
 	@NotNull private final UnitSystem unitSystem;
 
-	@NotNull private final UnitDimension dimension;
-
-	AreaUnit(@NotNull UnitDimension dimension, @NotNull Map<Language, StringArr2> localizedNames, @NotNull StringArr2 defaultName, @NotNull String defaultAbbreviation, @NotNull UnitSystem unitSystem) {
-		this.dimension = dimension;
-		this.localizedNames = localizedNames;
-		this.defaultName = defaultName;
-		this.localizedAbbreviations = generateLocalizedAbbreviations();
-		this.defaultAbbreviation = defaultAbbreviation;
-		this.unitSystem = unitSystem;
-	}
-
-	AreaUnit(@NotNull UnitDimension dimension, @NotNull Map<Language, StringArr2> localizedNames, @NotNull StringArr2 defaultName, @NotNull Map<Language, String> localizedAbbreviations, @NotNull String defaultAbbreviation, @NotNull UnitSystem unitSystem) {
-		this.dimension = dimension;
-		this.localizedNames = localizedNames;
-		this.defaultName = defaultName;
-		this.localizedAbbreviations = localizedAbbreviations;
-		this.defaultAbbreviation = defaultAbbreviation;
-		this.unitSystem = unitSystem;
-	}
+	private static final Map<String, AreaUnit> UNIT_MAP = Arrays.stream(values())
+			.collect(Collectors.toUnmodifiableMap(AreaUnit::getId, unit -> unit));
 
 	@Override
+	@Contract(pure = true)
 	public @NotNull String getId() { return this.name(); }
-
-	public static @Nullable AreaUnit getUnit(@NotNull String unitStr) {
-		return Arrays.stream(values())
-				.filter(unit -> unit.toString().equals(unitStr))
-				.findFirst()
-				.orElse(null);
-	}
 
 	@Override
 	public @NotNull String toString() {
 		return this.getClass().getSimpleName() + "." + this.name();
+	}
+
+	public static Optional<AreaUnit> getUnit(@NotNull String unitStr) {
+		return Optional.ofNullable(UNIT_MAP.get(unitStr));
 	}
 }
