@@ -17,6 +17,6 @@
 <dependency>
     <groupId>com.github.Akjo03</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.7.3</version>
+    <version>3.8.0</version>
 </dependency>
 ```

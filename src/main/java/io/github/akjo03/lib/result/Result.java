@@ -1,6 +1,8 @@
 package io.github.akjo03.lib.result;
 
+import io.github.akjo03.lib.annotation.PotentiallyDangerous;
 import io.github.akjo03.lib.functional.ThrowingSupplier;
+import io.github.akjo03.lib.validation.Validator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
@@ -89,13 +91,15 @@ public final class Result<S> implements Supplier<S>, Serializable {
 		return isEmpty;
 	}
 
-	public Throwable getError() {
+	@PotentiallyDangerous
+	public Throwable getError() throws NoSuchElementException {
 		if (!isError()) { throw new NoSuchElementException("Attempted to retrieve error on non-erroneous result"); }
 		return throwable;
 	}
 
 	@Override
-	public S get() {
+	@PotentiallyDangerous
+	public S get() throws NoSuchElementException {
 		if (isError()) { throw new NoSuchElementException("Attempted to retrieve value on erroneous result"); }
 		return successValue;
 	}
@@ -128,6 +132,11 @@ public final class Result<S> implements Supplier<S>, Serializable {
 		return successValue;
 	}
 
+	public <T extends Throwable> S orElseThrow(@NotNull Function<Throwable, T> throwableFunction) throws T {
+		if (isError()) { throw throwableFunction.apply(throwable); }
+		return successValue;
+	}
+
 
 	@SuppressWarnings("unchecked")
 	public <N> Result<N> map(@NotNull Function<S, N> f) {
@@ -149,7 +158,8 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	public <N> @NotNull Result<N> transform(@NotNull Function<S, N> successFunction, @NotNull Function<Throwable, N> errorFunction) {
 		if (isError()) {
 			return Result.success(errorFunction.apply(throwable));
-		}    return Result.success(successFunction.apply(successValue));
+		}
+		return Result.success(successFunction.apply(successValue));
 	}
 
 	public Result<S> onErrorTransform(@NotNull BiFunction<S, Throwable, S> transformFunction) {
@@ -219,20 +229,44 @@ public final class Result<S> implements Supplier<S>, Serializable {
 
 	@Contract("_, _ -> this")
 	public Result<S> ifPresent(@NotNull Consumer<S> success, @NotNull Consumer<Throwable> error) {
-		if (isSuccess()) success.accept(successValue);
+		if (isSuccess()) { success.accept(successValue); }
 		else error.accept(throwable);
 		return this;
 	}
 
 	@Contract("_, _, _ -> this")
 	public Result<S> ifPresentAnd(@NotNull Predicate<S> successCondition, @NotNull Consumer<S> success, @NotNull Consumer<Throwable> error) {
-		if (isSuccess() && successCondition.test(successValue)) success.accept(successValue);
+		if (isSuccess() && successCondition.test(successValue)) { success.accept(successValue); }
 		else error.accept(throwable);
 		return this;
 	}
 
+	@Contract("_ -> this")
+	public Result<S> ifEmpty(@NotNull Runnable runnable) {
+		if (isEmpty()) { runnable.run(); }
+		return this;
+	}
+
+	@Contract("_, _ -> this")
+	public Result<S> ifEmptyAnd(@NotNull Predicate<Result<S>> condition, @NotNull Runnable runnable) {
+		if (isEmpty() && condition.test(this)) { runnable.run(); }
+		return this;
+	}
+
+	@Contract("_ -> this")
+	public Result<S> ifNotEmpty(@NotNull Consumer<S> consumer) {
+		if (!isEmpty()) { consumer.accept(successValue); }
+		return this;
+	}
+
+	@Contract("_, _ -> this")
+	public Result<S> ifNotEmptyAnd(@NotNull Predicate<S> condition, @NotNull Consumer<S> consumer) {
+		if (!isEmpty() && condition.test(successValue)) { consumer.accept(successValue); }
+		return this;
+	}
+
 	public Result<S> wrapError(@NotNull BiFunction<String, Throwable, Throwable> f, @NotNull String message) {
-		if (isError()) return Result.fail(f.apply(message, throwable));
+		if (isError()) { return Result.fail(f.apply(message, throwable)); }
 		return this;
 	}
 
@@ -248,5 +282,63 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	public Stream<S> asStream() {
 		if (isSuccess()) { return Stream.of(successValue); }
 		return Stream.empty();
+	}
+
+	public Stream<Throwable> errorAsStream() {
+		if (isError()) { return Stream.of(throwable); }
+		return Stream.empty();
+	}
+
+	public Result<S> validate(@NotNull Validator<S> validator) {
+		if (isSuccess()) { return validator.validate(successValue); }
+		return this;
+	}
+
+	public Result<S> validate(@NotNull Validator<S> validator, @NotNull Consumer<Throwable> errorConsumer) {
+		if (isSuccess()) { return validator.validate(successValue); }
+		errorConsumer.accept(throwable);
+		return this;
+	}
+
+	public Result<S> validateIf(@NotNull Predicate<S> predicate, @NotNull Validator<S> validator) {
+		if (isSuccess() && predicate.test(successValue)) { return validator.validate(successValue); }
+		return this;
+	}
+
+	public Result<S> validateIf(@NotNull Predicate<S> predicate, @NotNull Validator<S> validator, @NotNull Consumer<Throwable> errorConsumer) {
+		if (isSuccess() && predicate.test(successValue)) { return validator.validate(successValue); }
+		errorConsumer.accept(throwable);
+		return this;
+	}
+
+	@Override
+	@Contract(value = "null -> false", pure = true)
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Result<?> result = (Result<?>) o;
+
+		boolean successValueEquals = Objects.equals(successValue, result.successValue);
+		boolean throwableEquals = Objects.equals(throwable, result.throwable);
+		boolean isEmptyEquals = isEmpty == result.isEmpty;
+
+		return successValueEquals && throwableEquals && isEmptyEquals;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(throwable, successValue, isEmpty);
+	}
+
+	@Override
+	public @NotNull String toString() {
+		if (isSuccess()) {
+			return "Result.Success(" + successValue + ")";
+		} else if (isError()) {
+			return "Result.Error(" + throwable + ")";
+		} else {
+			return "Result.Empty()";
+		}
 	}
 }
