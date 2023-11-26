@@ -123,7 +123,7 @@ public final class Result<S> implements Supplier<S>, Serializable {
 		return successValue;
 	}
 
-	public S orElseThrow(@NotNull Supplier<? extends Throwable> throwableSupplier) throws Throwable {
+	public <T extends Throwable> S orElseThrow(@NotNull Supplier<T> throwableSupplier) throws T {
 		if (isError()) { throw throwableSupplier.get(); }
 		return successValue;
 	}
