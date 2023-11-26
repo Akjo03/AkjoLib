@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Setup JDK 17 (Temurin)
-        uses: actions/setup-java@v2
+      - name: Setup JDK 21 (Temurin)
+        uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: Build and Test with Maven
         run: mvn --batch-mode --update-snapshots clean test verify

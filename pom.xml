@@ -6,7 +6,7 @@
 
     <groupId>io.github.akjo03.lib</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.7.0</version>
+    <version>3.7.1</version>
     <packaging>jar</packaging>
 
     <name>AkjoLib</name>
@@ -35,8 +35,8 @@
     </developers>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
