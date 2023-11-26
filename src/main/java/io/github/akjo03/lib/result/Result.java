@@ -1,5 +1,6 @@
 package io.github.akjo03.lib.result;
 
+import io.github.akjo03.lib.functional.ThrowingSupplier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
@@ -46,7 +47,7 @@ public final class Result<S> implements Supplier<S>, Serializable {
 		return new Result<>(null, null, true);
 	}
 
-	public static <S> Result<S> from(@NotNull ThrowingSupplier<S> s) {
+	public static <S> Result<S> from(@NotNull ThrowingSupplier<S, ? extends Throwable> s) {
 		Objects.requireNonNull(s);
 		try {
 			return success(s.get());
@@ -105,7 +106,7 @@ public final class Result<S> implements Supplier<S>, Serializable {
 		return successValue;
 	}
 
-	public S getOrElse(@NotNull Function<Throwable, S> function) {
+	public S getOrApply(@NotNull Function<Throwable, S> function) {
 		if (isError()) { return function.apply(throwable); }
 		return successValue;
 	}

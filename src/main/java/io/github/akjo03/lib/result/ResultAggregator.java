@@ -6,9 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -28,6 +30,12 @@ public class ResultAggregator {
 		return this;
 	}
 
+	public static <T> @NotNull ResultAggregator of(List<Result<T>> results) {
+		ResultAggregator aggregator = new ResultAggregator();
+		aggregator.results.addAll(results);
+		return aggregator;
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
 		if (results.isEmpty()) {
@@ -36,19 +44,12 @@ public class ResultAggregator {
 					.orElseGet(() -> (Result<T>) Result.empty());
 		}
 
-		List<Throwable> throwables = collectErrors();
+		List<Throwable> throwables = results.stream()
+				.filter(Result::isError)
+				.map(Result::getError)
+				.collect(Collectors.toList());
 
 		return throwables.isEmpty() ? Result.success(onSuccess.get()) : Result.fail(new AggregatedException(throwables));
-	}
-
-	private @NotNull List<Throwable> collectErrors() {
-		List<Throwable> throwables = new ArrayList<>();
-		for (Result<?> result : results) {
-			if (result.isError()) {
-				throwables.add(result.getError());
-			}
-		}
-		return throwables;
 	}
 
 	public Result<Object> aggregateFirst() {
@@ -89,9 +90,31 @@ public class ResultAggregator {
 		return throwables.isEmpty() ? Result.success(values) : Result.fail(new AggregatedException(throwables));
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Result<List<T>> aggregateAll() {
-		return aggregateAll(result -> (Result<T>) result);
+	public void aggregateAll(Consumer<List<Result<?>>> validConsumer, Consumer<List<Throwable>> invalidConsumer) {
+		List<Throwable> throwables = new ArrayList<>();
+		List<Result<?>> values = new ArrayList<>();
+
+		for (Result<?> result : results) {
+			if (result.isError()) {
+				throwables.add(result.getError());
+			} else {
+				values.add(result);
+			}
+		}
+
+		if (throwables.isEmpty()) {
+			validConsumer.accept(values);
+		} else {
+			invalidConsumer.accept(throwables);
+		}
+	}
+
+	public <T> Result<List<T>> aggregateAll(Class<T> type) {
+		return aggregateAll(result -> result.map(type::cast));
+	}
+
+	public Result<List<Object>> aggregateAll() {
+		return aggregateAll(Object.class);
 	}
 
 	public <T> Result<T> aggregateBut(T t) {

@@ -86,11 +86,11 @@ public class ResultTest {
 		String data = "Hello, World!";
 
 		Result<String> result = Result.success(data);
-		assertEquals(data, result.getOrElse(e -> "Test"));
+		assertEquals(data, result.getOrApply(e -> "Test"));
 
 		Exception exception = new Exception("Test");
 		result = Result.fail(exception);
-		assertEquals("Failed: Test", result.getOrElse(e -> "Failed: " + e.getMessage()));
+		assertEquals("Failed: Test", result.getOrApply(e -> "Failed: " + e.getMessage()));
 	}
 
 	@Test
