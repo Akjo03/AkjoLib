@@ -1,4 +1,4 @@
-package io.github.akjo03.lib.json.validation;
+package io.github.akjo03.lib.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -8,8 +8,8 @@ import io.github.akjo03.lib.result.Result;
 import java.io.IOException;
 
 @SuppressWarnings("unused")
-public abstract class ValidatingSerializer<T> extends StdSerializer<T> {
-    protected ValidatingSerializer(Class<T> type) {
+public abstract class CustomSerializer<T> extends StdSerializer<T> {
+    protected CustomSerializer(Class<T> type) {
         super(type);
     }
 

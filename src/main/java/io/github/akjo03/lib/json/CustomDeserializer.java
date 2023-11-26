@@ -1,18 +1,23 @@
-package io.github.akjo03.lib.json.validation;
+package io.github.akjo03.lib.json;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.github.akjo03.lib.result.Result;
 import io.github.akjo03.lib.result.ResultAggregator;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
-public abstract class ValidatingDeserializer<T> extends StdDeserializer<T> {
-    protected ValidatingDeserializer(Class<T> type) {
+public abstract class CustomDeserializer<T> extends StdDeserializer<T> {
+    protected CustomDeserializer(Class<T> type) {
         super(type);
     }
 
@@ -38,4 +43,12 @@ public abstract class ValidatingDeserializer<T> extends StdDeserializer<T> {
     public abstract Result<T> fromJson(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException ;
 
     public abstract Result<T> validate(T t);
+
+    protected static <T> @NotNull List<T> deserializeList(@NotNull JsonNode node, @NotNull JsonParser parser, @NotNull Class<T> type) throws JsonProcessingException {
+        List<T> list = new ArrayList<>();
+        for (JsonNode childNode : node) {
+            list.add(parser.getCodec().treeToValue(childNode, type));
+        }
+        return list;
+    }
 }
