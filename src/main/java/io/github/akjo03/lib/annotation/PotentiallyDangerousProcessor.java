@@ -10,7 +10,7 @@ import javax.tools.Diagnostic;
 import java.util.Set;
 
 @SupportedAnnotationTypes("io.github.akjo03.lib.annotation.PotentiallyDangerous")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
 @AutoService(Processor.class)
 @SuppressWarnings("unused")
 public class PotentiallyDangerousProcessor extends AbstractProcessor {

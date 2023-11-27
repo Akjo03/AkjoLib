@@ -21,6 +21,6 @@ This library is not meant for production use! There are some gems in here, so ta
 <dependency>
     <groupId>com.github.Akjo03</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.8.1</version>
+    <version>3.8.2</version>
 </dependency>
 ```

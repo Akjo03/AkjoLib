@@ -6,7 +6,7 @@
 
     <groupId>io.github.akjo03.lib</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.8.1</version>
+    <version>3.8.2</version>
     <packaging>jar</packaging>
 
     <name>AkjoLib</name>
@@ -48,6 +48,7 @@
         <flatlaf.version>3.2.1</flatlaf.version>
         <junit.version>5.10.0</junit.version>
         <mockito.version>5.4.0</mockito.version>
+        <jetbrains.annotations.version>24.0.1</jetbrains.annotations.version>
     </properties>
 
     <dependencies>
@@ -59,7 +60,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
+            <version>${jetbrains.annotations.version}</version>
         </dependency>
 
         <dependency>
