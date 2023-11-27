@@ -6,6 +6,10 @@
     <h1>📕 AkjoLib</h1>
 </div>
 
+This library is not meant for production use! There are some gems in here, so take out what you think you need! But I wouldn't suggest using this library in any productive environment, if you don't know what you're doing. This library gets frequently updated and does not follow any versioning scheme. Some features might be incomplete and the codebase does not have 100% test coverage. PLEASE BE AWARE OF THIS!
+
+--------
+
 ```xml
 <repository>
     <id>jitpack.io</id>
