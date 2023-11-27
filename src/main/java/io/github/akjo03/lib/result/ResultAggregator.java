@@ -1,5 +1,6 @@
 package io.github.akjo03.lib.result;
 
+import io.github.akjo03.lib.validation.ValidatorGroup;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,14 @@ public class ResultAggregator {
 	public static <T> @NotNull ResultAggregator of(List<Result<T>> results) {
 		ResultAggregator aggregator = new ResultAggregator();
 		aggregator.results.addAll(results);
+		return aggregator;
+	}
+
+	public static <T> @NotNull ResultAggregator of(@NotNull List<T> values, @NotNull ValidatorGroup<T> validatorGroup) {
+		ResultAggregator aggregator = new ResultAggregator();
+		values.stream()
+				.map(validatorGroup::validate)
+				.forEach(aggregator::add);
 		return aggregator;
 	}
 

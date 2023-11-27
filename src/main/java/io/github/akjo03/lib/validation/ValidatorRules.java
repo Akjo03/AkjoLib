@@ -2,6 +2,7 @@ package io.github.akjo03.lib.validation;
 
 import io.github.akjo03.lib.math.Range;
 import io.github.akjo03.lib.result.Result;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -86,6 +87,26 @@ public final class ValidatorRules {
 	@Contract(pure = true)
 	public static @NotNull Validator<String> stringLengthIsOutsideInclusive(int min, int max, String message) {
 		return s -> (s.length() > min && s.length() < max) ? Result.fail(new ValidationException(message)) : Result.success(s);
+	}
+
+	@Contract(pure = true)
+	public static @NotNull Validator<String> stringStartsWith(String prefix, String message) {
+		return s -> !s.startsWith(prefix) ? Result.fail(new ValidationException(message)) : Result.success(s);
+	}
+
+	@Contract(pure = true)
+	public static @NotNull Validator<String> stringDoesNotStartWith(String prefix, String message) {
+		return s -> s.startsWith(prefix) ? Result.fail(new ValidationException(message)) : Result.success(s);
+	}
+
+	@Contract(pure = true)
+	public static @NotNull Validator<String> stringEndsWith(String suffix, String message) {
+		return s -> !s.endsWith(suffix) ? Result.fail(new ValidationException(message)) : Result.success(s);
+	}
+
+	@Contract(pure = true)
+	public static @NotNull Validator<String> stringDoesNotEndWith(String suffix, String message) {
+		return s -> s.endsWith(suffix) ? Result.fail(new ValidationException(message)) : Result.success(s);
 	}
 
 	@Contract(pure = true)
