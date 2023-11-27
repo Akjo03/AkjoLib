@@ -6,7 +6,7 @@
 
     <groupId>io.github.akjo03.lib</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.8.2</version>
+    <version>3.9.0</version>
     <packaging>jar</packaging>
 
     <name>AkjoLib</name>
@@ -43,7 +43,6 @@
         <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.15.2</jackson.version>
         <commons-lang.version>3.13.0</commons-lang.version>
-        <autoservice.version>1.1.1</autoservice.version>
         <guava.version>32.1.2-jre</guava.version>
         <flatlaf.version>3.2.1</flatlaf.version>
         <junit.version>5.10.0</junit.version>
@@ -88,11 +87,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <version>${autoservice.version}</version>
         </dependency>
 
         <dependency>
@@ -146,11 +140,6 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
-                        </annotationProcessorPath>
-                        <annotationProcessorPath>
-                            <groupId>com.google.auto.service</groupId>
-                            <artifactId>auto-service</artifactId>
-                            <version>${autoservice.version}</version>
                         </annotationProcessorPath>
                     </annotationProcessorPaths>
                 </configuration>
