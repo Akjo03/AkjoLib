@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -19,6 +18,8 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("unused")
 public class ResultAggregator {
+	private static final String DEFAULT_REPORT_TITLE = "Aggregated Exception Report";
+
 	private final List<Result<?>> results;
 
 	@Contract(pure = true)
@@ -45,41 +46,60 @@ public class ResultAggregator {
 		return aggregator;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
+	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess, String reportTitle) {
 		if (results.isEmpty()) {
 			return Optional.ofNullable(onEmpty.get())
 					.map(Result::success)
-					.orElseGet(() -> (Result<T>) Result.empty());
+					.orElseGet(Result::empty);
 		}
 
 		List<Throwable> throwables = results.stream()
 				.filter(Result::isError)
 				.map(Result::getError)
-				.collect(Collectors.toList());
+				.toList();
 
-		return throwables.isEmpty() ? Result.success(onSuccess.get()) : Result.fail(new AggregatedException(throwables));
+		return throwables.isEmpty()
+				? Result.success(onSuccess.get())
+				: Result.fail(new AggregatedException(throwables, reportTitle));
+	}
+
+	private <T> Result<T> aggregate(Supplier<T> onEmpty, Supplier<T> onSuccess) {
+		return aggregate(onEmpty, onSuccess, DEFAULT_REPORT_TITLE);
+	}
+
+	public Result<Object> aggregateFirst(String reportTitle) {
+		return aggregate(() -> null, () -> results.get(0).get(), reportTitle);
 	}
 
 	public Result<Object> aggregateFirst() {
-		return aggregate(() -> null, () -> results.get(0).get());
+		return aggregateFirst(DEFAULT_REPORT_TITLE);
+	}
+
+	public Result<Object> aggregateLast(String reportTitle) {
+		return aggregate(() -> null, () -> results.get(results.size() - 1).get(), reportTitle);
 	}
 
 	public Result<Object> aggregateLast() {
-		return aggregate(() -> null, () -> results.get(results.size() - 1).get());
+		return aggregateLast(DEFAULT_REPORT_TITLE);
 	}
 
-	public Result<Object> aggregateFor(Predicate<Result<?>> predicate) {
+	public Result<Object> aggregateFor(Predicate<Result<?>> predicate, String reportTitle) {
 		return aggregate(
 				() -> null,
 				() -> results.stream()
 						.filter(predicate)
 						.findFirst()
 						.map(Result::get)
-						.orElse(null));
+						.orElse(null),
+				reportTitle
+		);
 	}
 
-	public <T> Result<List<T>> aggregateAll(Function<Result<?>, Result<T>> resultTransformer) {
+	public Result<Object> aggregateFor(Predicate<Result<?>> predicate) {
+		return aggregateFor(predicate, DEFAULT_REPORT_TITLE);
+	}
+
+	public <T> Result<List<T>> aggregateAll(Function<Result<?>, Result<T>> resultTransformer, String reportTitle) {
 		List<Throwable> throwables = new ArrayList<>();
 		List<T> values = new ArrayList<>();
 
@@ -96,7 +116,13 @@ public class ResultAggregator {
 			}
 		}
 
-		return throwables.isEmpty() ? Result.success(values) : Result.fail(new AggregatedException(throwables));
+		return throwables.isEmpty()
+				? Result.success(values)
+				: Result.fail(new AggregatedException(throwables, reportTitle));
+	}
+
+	public <T> Result<List<T>> aggregateAll(Function<Result<?>, Result<T>> resultTransformer) {
+		return aggregateAll(resultTransformer, DEFAULT_REPORT_TITLE);
 	}
 
 	public void aggregateAll(Consumer<List<Result<?>>> validConsumer, Consumer<List<Throwable>> invalidConsumer) {
@@ -126,8 +152,12 @@ public class ResultAggregator {
 		return aggregateAll(Object.class);
 	}
 
+	public <T> Result<T> aggregateBut(T t, String reportTitle) {
+		return aggregate(() -> t, () -> t, reportTitle);
+	}
+
 	public <T> Result<T> aggregateBut(T t) {
-		return aggregate(() -> t, () -> t);
+		return aggregateBut(t, DEFAULT_REPORT_TITLE);
 	}
 
 	public boolean isAllSuccess() {

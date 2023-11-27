@@ -1,6 +1,7 @@
 package io.github.akjo03.lib.result;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -10,9 +11,11 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class AggregatedException extends RuntimeException {
 	private final List<Throwable> throwables;
+	@Setter private String reportTitle = "Aggregated Exception Report";
 
-	public AggregatedException(List<Throwable> throwables) {
+	public AggregatedException(List<Throwable> throwables, String reportTitle) {
 		this.throwables = unwrap(throwables);
+		this.reportTitle = reportTitle;
 	}
 
 	private @NotNull List<Throwable> unwrap(@NotNull List<Throwable> oldExceptions) {
@@ -29,10 +32,6 @@ public class AggregatedException extends RuntimeException {
 
 	@Override
 	public String getMessage() {
-		return getMessage("Aggregated Exception Report");
-	}
-
-	public String getMessage(String reportTitle) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(reportTitle).append(" (").append(throwables.size()).append(" exception(s)):\n");
 		for (int i = 0; i < throwables.size(); i++) {
@@ -42,14 +41,9 @@ public class AggregatedException extends RuntimeException {
 		return builder.toString();
 	}
 
-	@Override
-	public String toString() {
-		return getMessage("Aggregated Exception Report");
-	}
-
 	public static void print(Throwable e, String reportTitle) {
 		if (e instanceof AggregatedException) {
-			System.err.println(((AggregatedException) e).getMessage(reportTitle));
+			System.err.println(e.getMessage());
 		} else {
 			System.err.println(reportTitle + " (1 exception):\n\tException 1 (" + e.getClass().getSimpleName() + "): " + e.getMessage());
 		}
