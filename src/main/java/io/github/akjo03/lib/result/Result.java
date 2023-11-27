@@ -71,9 +71,9 @@ public final class Result<S> implements Supplier<S>, Serializable {
 
 	/**
 	 * Creates a result from the given supplier. If the supplier throws an exception, an erroneous result is returned.
-	 * @param s The supplier to wrap in a successful result.
+	 * @param s The supplier to wrap in a result.
 	 * @param <S> The type of the value.
-	 * @return A successful result with the value from the given supplier.
+	 * @return A result with the value from the given supplier.
 	 */
 	public static <S> Result<S> from(@NotNull ThrowingSupplier<S, ? extends Throwable> s) {
 		Objects.requireNonNull(s);
@@ -147,16 +147,6 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	}
 
 	/**
-	 * @return Returns the error if the result is erroneous.
-	 * @apiNote This method is potentially <strong>unsafe</strong>! Use {@link #isError()} to check if the result is erroneous.
-	 * @throws NoSuchElementException If the result is not erroneous.
-	 */
-	public Throwable getError() throws NoSuchElementException {
-		if (!isError()) { throw new NoSuchElementException("Attempted to retrieve error on non-erroneous result"); }
-		return throwable;
-	}
-
-	/**
 	 * @return Returns the value if the result is successful.
 	 * @apiNote This method is potentially <strong>unsafe</strong>! Use {@link #isSuccess()} to check if the result is successful.
 	 * @throws NoSuchElementException If the result is not successful.
@@ -165,6 +155,16 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	public S get() throws NoSuchElementException {
 		if (isError()) { throw new NoSuchElementException("Attempted to retrieve value on erroneous result"); }
 		return successValue;
+	}
+
+	/**
+	 * @return Returns the error if the result is erroneous.
+	 * @apiNote This method is potentially <strong>unsafe</strong>! Use {@link #isError()} to check if the result is erroneous.
+	 * @throws NoSuchElementException If the result is not erroneous.
+	 */
+	public Throwable getError() throws NoSuchElementException {
+		if (!isError()) { throw new NoSuchElementException("Attempted to retrieve error on non-erroneous result"); }
+		return throwable;
 	}
 
 	/**
@@ -225,6 +225,30 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	public <T extends Throwable> S orElseThrow(@NotNull Function<Throwable, T> throwableFunction) throws T {
 		if (isError()) { throw throwableFunction.apply(throwable); }
 		return successValue;
+	}
+
+	/**
+	 * @param throwableSupplier The supplier to use to throw an exception if the result is erroneous.
+	 * @param <T> The type of the exception to throw.
+	 * @return Returns this result if the result is successful, otherwise throws the exception from the given supplier.
+	 * @throws T If the result is erroneous.
+	 */
+	@Contract("_ -> this")
+	public <T extends Throwable> Result<S> onErrorThrow(@NotNull Supplier<T> throwableSupplier) throws T {
+		if (isError()) { throw throwableSupplier.get(); }
+		return this;
+	}
+
+	/**
+	 * @param throwableFunction The function to use to throw an exception if the result is erroneous. The throwable is passed as an argument.
+	 * @param <T> The type of the exception to throw.
+	 * @return Returns this result if the result is successful, otherwise throws the exception from the given function.
+	 * @throws T If the result is erroneous.
+	 */
+	@Contract("_ -> this")
+	public <T extends Throwable> Result<S> onErrorThrow(@NotNull Function<Throwable, T> throwableFunction) throws T {
+		if (isError()) { throw throwableFunction.apply(throwable); }
+		return this;
 	}
 
 	/**

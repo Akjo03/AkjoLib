@@ -6,7 +6,7 @@
 
     <groupId>io.github.akjo03.lib</groupId>
     <artifactId>AkjoLib</artifactId>
-    <version>3.9.0</version>
+    <version>3.9.1</version>
     <packaging>jar</packaging>
 
     <name>AkjoLib</name>
