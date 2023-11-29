@@ -380,6 +380,19 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	}
 
 	/**
+	 * Filters the success value of the Result using a predicate, potentially returning an error if the predicate is not satisfied.
+	 * @param predicate The predicate to apply to the success value.
+	 * @param exceptionFunction The function to apply to the success value to generate an exception if the predicate is not satisfied.
+	 * @return The original Result if the predicate is satisfied; otherwise, a new erroneous Result.
+	 */
+	public Result<S> filter(@NotNull Predicate<S> predicate, @NotNull Function<S, Throwable> exceptionFunction) {
+		if (isSuccess() && !predicate.test(successValue)) {
+			return Result.fail(exceptionFunction.apply(successValue));
+		}
+		return this;
+	}
+
+	/**
 	 * Transforms a stream of results into a single result containing a stream of values.
 	 * @param results The stream of results to transform.
 	 * @param <T> The type of the value.
