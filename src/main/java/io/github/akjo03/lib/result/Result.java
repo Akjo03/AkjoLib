@@ -263,6 +263,21 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	}
 
 	/**
+	 * Maps the value of a successful result using the provided function if the predicate is met. If the result is erroneous, it is returned as is.
+	 * @param predicate The predicate to check against the value of a successful result.
+	 * @param f The function to apply to the value of a successful result.
+	 * @param <N> The type of the new value.
+	 * @return A new Result instance with the mapped value if the original result was successful and the predicate was met; otherwise, the original erroneous result.
+	 */
+	@SuppressWarnings("unchecked")
+	public <N> Result<N> mapWhen(@NotNull Predicate<S> predicate, @NotNull Function<S, N> f) {
+		if (predicate.test(successValue)) {
+			return Result.from(() -> f.apply(successValue));
+		}
+        return (Result<N>) this;
+	}
+
+	/**
 	 * Applies the provided function to the value of a successful result, which should return another Result. If the result is erroneous, it is returned as is.
 	 * @param f The function to apply to the value of a successful result.
 	 * @return A new Result instance resulting from the function application if the original result was successful; otherwise, the original erroneous result.
@@ -271,6 +286,21 @@ public final class Result<S> implements Supplier<S>, Serializable {
 	public <N> Result<N> flatMap(@NotNull Function<S, Result<N>> f) {
 		if (isError()) { return (Result<N>) this; }
 		return f.apply(successValue);
+	}
+
+	/**
+	 * Applies the provided function to the value of a successful result, which should return another Result, if the predicate is met. If the result is erroneous, it is returned as is.
+	 * @param predicate The predicate to check against the value of a successful result.
+	 * @param f The function to apply to the value of a successful result.
+	 * @param <N> The type of the new value.
+	 * @return A new Result instance resulting from the function application if the original result was successful and the predicate was met; otherwise, the original erroneous result.
+	 */
+	@SuppressWarnings("unchecked")
+	public <N> Result<N> flatMapWhen(@NotNull Predicate<S> predicate, @NotNull Function<S, Result<N>> f) {
+		if (predicate.test(successValue)) {
+			return f.apply(successValue);
+		}
+		return (Result<N>) this;
 	}
 
 	/**
